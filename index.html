@@ -241,10 +241,16 @@ body {
   font-size: 0.68rem;
   font-weight: 600;
   cursor: pointer;
-  padding: 6px 8px;
+  padding: 6px 4px;
   gap: 3px;
   flex: 1;
+  min-width: 0;
+  white-space: nowrap;
   transition: all 0.2s;
+}
+
+.bottom-nav-item span {
+  white-space: nowrap;
 }
 
 .bottom-nav-item .icon {
@@ -2827,29 +2833,25 @@ select.form-control {
        Mobile Bottom Navigation Bar
        ==================================================== -->
   <nav class="mobile-bottom-nav no-print">
-    <button class="bottom-nav-item active" data-tab="tab-dashboard">
+    <button class="bottom-nav-item active" data-tab="tab-dashboard" title="डॅशबोर्ड सांख्यिकी">
       <span class="icon"><i class="fa-solid fa-chart-pie"></i></span>
       <span>डॅशबोर्ड</span>
     </button>
-    <button class="bottom-nav-item" data-tab="tab-register">
+    <button class="bottom-nav-item" data-tab="tab-register" title="सर्वेक्षण नोंदवही">
       <span class="icon"><i class="fa-solid fa-address-book"></i></span>
       <span>नोंदवही</span>
     </button>
-    <button class="bottom-nav-item highlight" data-tab="tab-feeding" onclick="startNewFamily();">
+    <button class="bottom-nav-item highlight" data-tab="tab-feeding" onclick="startNewFamily();" title="नवीन कुटुंब नोंदणी">
       <div class="icon-circle">
         <i class="fa-solid fa-plus"></i>
       </div>
-      <span style="margin-top: 4px;">नवीन नोंद</span>
+      <span style="margin-top: 4px;">नवीन कुटुंब</span>
     </button>
-    <button class="bottom-nav-item" data-tab="tab-panjika">
+    <button class="bottom-nav-item" data-tab="tab-panjika" title="शासकीय गाव शैक्षणिक पंजिका">
       <span class="icon"><i class="fa-solid fa-book-bookmark"></i></span>
       <span>गाव पंजिका</span>
     </button>
-    <button class="bottom-nav-item" data-tab="tab-print">
-      <span class="icon"><i class="fa-solid fa-print"></i></span>
-      <span>प्रिंट / PDF</span>
-    </button>
-    <button class="bottom-nav-item" data-tab="tab-settings">
+    <button class="bottom-nav-item" data-tab="tab-settings" title="शाळा माहिती व बॅकअप">
       <span class="icon"><i class="fa-solid fa-sliders"></i></span>
       <span>सेटिंग्ज</span>
     </button>
