@@ -3706,72 +3706,115 @@ select.form-control {
   </div>
 
   <!-- ====================================================
-       Data Entry Activation & ₹499 License Modal
+       Data Entry & Gav Panjika License (₹499) Modal
        ==================================================== -->
   <div id="activationModal" class="modal-overlay" onclick="if(event.target === this) closeActivationModal()" style="display: none; align-items: center; justify-content: center; z-index: 99999;">
-    <div class="modal-card" style="border-top: 5px solid #dc2626; max-width: 560px; width: 94%;">
+    <div class="modal-card" style="border-top: 5px solid #dc2626; max-width: 580px; width: 95%;">
       <div class="modal-header" style="background: #fef2f2; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid #fecaca;">
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 1.5rem; color: #dc2626;"><i class="fa-solid fa-lock"></i></span>
           <div>
-            <h3 style="color: #991b1b; font-size: 1.15rem; font-weight: 800; margin: 0;">डेटा एन्ट्री परवाना आवश्यक (License Required)</h3>
-            <p style="margin: 0; font-size: 0.75rem; color: #b91c1c;">वार्षिक सर्वेक्षण, कुटुंब नोंदणी व अमर्यादित क्लाउड सिंक</p>
+            <h3 style="color: #991b1b; font-size: 1.15rem; font-weight: 800; margin: 0;">सॉफ्टवेअर परवाना आवश्यक (License Required)</h3>
+            <p style="margin: 0; font-size: 0.78rem; color: #b91c1c; font-weight: 600;">सॉफ्टवेअरचा परवाना (License) घेण्यासाठी कृपया ॲडमिनशी संपर्क साधा.</p>
           </div>
         </div>
-        <button type="button" class="btn btn-outline btn-sm" onclick="closeActivationModal()" style="border: none; font-size: 1.4rem; line-height: 1; padding: 2px 8px; color: #991b1b;">&times;</button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeActivationModal()" style="border: none; font-size: 1.4rem; line-height: 1; padding: 2px 8px; color: #991b1b;" title="बंद करा">&times;</button>
       </div>
 
-      <div class="modal-body" style="padding: 18px; max-height: 80vh; overflow-y: auto;">
+      <div class="modal-body" style="padding: 16px 18px; max-height: 82vh; overflow-y: auto;">
+        <!-- Alert Box: Tab Restriction -->
+        <div style="background: #fff1f2; border: 1.5px solid #fecdd3; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 0.85rem; color: #9f1239; line-height: 1.45; display: flex; align-items: flex-start; gap: 10px;">
+          <i class="fa-solid fa-shield-halved" style="font-size: 1.25rem; color: #e11d48; margin-top: 2px;"></i>
+          <div>
+            <strong>टॅब लॉक सूचना:</strong> 'Data Feeding' आणि 'गाव पंजीका (Village Register)' या दोन्ही टॅबवर काम करण्यासाठी ॲक्टिव्ह परवाना (Active License) आवश्यक आहे.
+          </div>
+        </div>
+
         <!-- School Info Badge -->
         <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
           <div>
-            <span style="font-size: 0.78rem; color: #64748b;">सध्याची शाळा:</span>
+            <span style="font-size: 0.78rem; color: #64748b;">शाळेचे नाव:</span>
             <div id="activationSchoolName" style="font-weight: 700; color: #1e293b; font-size: 0.95rem;">-</div>
           </div>
           <div>
             <span style="font-size: 0.78rem; color: #64748b;">UDISE कोड:</span>
             <div id="activationSchoolUdise" style="font-family: monospace; font-weight: 800; color: #2563eb; font-size: 0.95rem;">-</div>
           </div>
-        </div>
-
-        <!-- Pricing Card -->
-        <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 2px solid #f59e0b; border-radius: 10px; padding: 16px; margin-bottom: 16px; text-align: center;">
-          <div style="font-size: 0.85rem; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 0.5px;">वार्षिक सॉफ्टवेअर व सर्व्हर परवाना</div>
-          <div style="font-size: 2.2rem; font-weight: 800; color: #b45309; margin: 4px 0;">₹४९९ <span style="font-size: 0.95rem; font-weight: 600; color: #92400e;">/ वर्ष (प्रति शाळा)</span></div>
-          <p style="font-size: 0.84rem; color: #78350f; margin: 0; line-height: 1.4;">
-            शाळेतील सर्व शिक्षकांसाठी अमर्यादित कुटुंब डेटा एन्ट्री, रिअल-टाइम क्लाउड सिंक, गाव पंजिका (११ भाग) व एक्सेल रिपोर्ट उपलब्ध.
-          </p>
-        </div>
-
-        <!-- Payment and Contact Details -->
-        <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
-          <h4 style="margin: 0 0 10px 0; font-size: 0.92rem; font-weight: 800; color: #1e3a8a; display: flex; align-items: center; gap: 6px;">
-            <i class="fa-solid fa-wallet text-success"></i> पेमेंट व ॲक्टिव्हेशन संपर्क माहिती
-          </h4>
-          <div style="font-size: 0.85rem; line-height: 1.6; color: #334155;">
-            <div>👤 <b>नाव:</b> श्री गणेश विलास पष्टे (सॉफ्टवेअर निर्माता)</div>
-            <div>📱 <b>GPay / PhonePe / Paytm / UPI:</b> <code style="background: #eff6ff; color: #1d4ed8; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.95rem;">9226979531</code></div>
-            <div>📞 <b>थेट संपर्क:</b> <a href="tel:9226979531" style="color: #2563eb; font-weight: 700; text-decoration: none;">९२२६९७९५३१</a></div>
+          <div>
+            <span style="font-size: 0.78rem; color: #64748b;">परवाना स्थिती:</span>
+            <div><span class="badge" style="background: #fee2e2; color: #b91c1c; font-weight: 800; padding: 2px 8px; border-radius: 4px; font-size: 0.78rem;"><i class="fa-solid fa-clock"></i> प्रलंबित (Pending Approval)</span></div>
           </div>
+        </div>
+
+        <!-- UPI Payment Integration Card -->
+        <div style="background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border: 2px solid #f59e0b; border-radius: 10px; padding: 16px; margin-bottom: 14px; text-align: center;">
+          <div style="font-size: 0.85rem; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: 0.5px;">युपीआय पेमेंट (UPI Payment Integration)</div>
+          <div style="font-size: 2rem; font-weight: 800; color: #b45309; margin: 4px 0;">₹४९९ <span style="font-size: 0.92rem; font-weight: 600; color: #92400e;">/ वर्ष (वार्षिक परवाना शुल्क)</span></div>
+          <p style="font-size: 0.82rem; color: #78350f; margin: 0 0 10px 0; line-height: 1.4;">
+            सॉफ्टवेअरचा परवाना मिळवण्यासाठी खालील अधिकृत युपीआय आयडीवर पेमेंट करा:
+          </p>
+
+          <!-- UPI ID Display & Copy -->
+          <div style="background: #ffffff; border: 2px dashed #d97706; border-radius: 8px; padding: 10px 14px; display: inline-flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+            <div style="text-align: left;">
+              <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">अधिकृत युपीआय आयडी (UPI ID):</div>
+              <div style="font-family: monospace; font-size: 1.15rem; font-weight: 800; color: #1e3a8a; letter-spacing: 0.5px;">9226979531@ptaxis</div>
+            </div>
+            <button type="button" class="btn btn-sm" onclick="copyUpiIdToClipboard()" style="background: #1e40af; color: #fff; font-weight: 700; padding: 6px 12px; font-size: 0.82rem; border-radius: 6px; border: none; cursor: pointer;">
+              <i class="fa-solid fa-copy"></i> कॉपी करा
+            </button>
+          </div>
+
+          <!-- QR Code & Pay Now Button -->
+          <div style="display: flex; align-items: center; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 6px;">
+            <div style="background: #ffffff; padding: 6px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08);">
+              <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=upi%3A%2F%2Fpay%3Fpa%3D9226979531%40ptaxis%26pn%3DGanesh%2520Pashte%26am%3D499%26cu%3DINR%26tn%3DGav%2520Survey%2520License" alt="UPI QR Code" style="width: 130px; height: 130px; display: block;" onerror="this.style.display='none'; document.getElementById('qrFallbackText').style.display='block';">
+              <div id="qrFallbackText" style="display: none; font-size: 0.75rem; color: #64748b; padding: 10px;">QR कोड लोड न झाल्यास वरील UPI ID वापरा</div>
+              <div style="font-size: 0.72rem; font-weight: 700; color: #475569; margin-top: 4px;">स्कॅन करून भरा (₹४९९)</div>
+            </div>
+            <div style="text-align: left; max-width: 260px;">
+              <div style="font-size: 0.8rem; color: #475569; margin-bottom: 8px; line-height: 1.5;">
+                👤 <b>नाव:</b> श्री गणेश विलास पष्टे<br>
+                📱 <b>अॅप्स:</b> GPay, PhonePe, Paytm, BHIM<br>
+                📞 <b>मोबाईल:</b> ९२२६९७९५३१
+              </div>
+              <a href="upi://pay?pa=9226979531@ptaxis&pn=Ganesh%20Pashte&am=499&cu=INR&tn=Gav%20Survey%20License" class="btn" style="background: #ea580c; color: #ffffff; font-weight: 800; font-size: 0.88rem; padding: 8px 14px; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 4px rgba(234, 88, 12, 0.3);">
+                <i class="fa-solid fa-bolt"></i> Pay Now (थेट भरा)
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Screenshot & Admin Approval Flow -->
+        <div style="background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px;">
+          <h4 style="margin: 0 0 6px 0; font-size: 0.9rem; font-weight: 800; color: #166534; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-circle-check text-success"></i> पेमेंटनंतर परवाना सक्रिय करण्याची कृती (Next Steps):
+          </h4>
+          <ol style="margin: 0; padding-left: 20px; font-size: 0.83rem; color: #14532d; line-height: 1.55;">
+            <li>युपीआय आयडी <b>9226979531@ptaxis</b> वर ₹४९९ पेमेंट पूर्ण करा.</li>
+            <li>पेमेंटचा <b>स्क्रीनशॉट</b> काढा.</li>
+            <li>खाली दिलेल्या <b>WhatsApp बटणावर क्लिक करून</b> पेमेंटचा स्क्रीनशॉट व आपली माहिती (UDISE व शाळेचे नाव) ॲडमिनला पाठवा.</li>
+            <li>ॲडमिनने बॅकएंडवरून परवाना <b>(License Status: Approved)</b> चालू केल्याशिवाय ते दोन्ही टॅब ओपन होणार नाहीत आणि तोपर्यंत हाच मेसेज दिसेल.</li>
+          </ol>
         </div>
 
         <!-- WhatsApp & Call Action Buttons -->
         <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;">
-          <a id="btnActivationWhatsApp" href="https://wa.me/919226979531" target="_blank" class="btn" style="background: #22c55e; color: #ffffff; padding: 11px; font-weight: 800; font-size: 0.95rem; text-align: center; border-radius: 6px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);">
-            <i class="fa-brands fa-whatsapp" style="font-size: 1.2rem;"></i> WhatsApp वर संपर्क करा व ॲक्सेस सुरू करा
+          <a id="btnActivationWhatsApp" href="https://wa.me/919226979531?text=Hi%20Admin,%20I%20want%20to%20buy%20software%20license" target="_blank" class="btn" style="background: #22c55e; color: #ffffff; padding: 11px; font-weight: 800; font-size: 0.95rem; text-align: center; border-radius: 6px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 2px 6px rgba(34, 197, 94, 0.3);">
+            <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> WhatsApp वर स्क्रीनशॉट पाठवा व परवाना सुरू करा
           </a>
           <a href="tel:9226979531" class="btn btn-outline" style="padding: 9px; font-weight: 700; font-size: 0.88rem; text-align: center; border-radius: 6px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px; border: 1.5px solid #2563eb; color: #2563eb;">
-            <i class="fa-solid fa-phone"></i> थेट फोनवर संपर्क करा (9226979531)
+            <i class="fa-solid fa-phone"></i> ॲडमिनला थेट फोनवर संपर्क करा (9226979531)
           </a>
         </div>
 
         <!-- Live Status Polling Button -->
         <div style="text-align: center; border-top: 1px dashed #cbd5e1; padding-top: 12px;">
           <p style="font-size: 0.78rem; color: #64748b; margin-bottom: 8px;">
-            शुल्क भरले असल्यास किंवा ॲडमिनने ॲक्सेस मंजूर केला असल्यास खालील बटण दाबा:
+            स्क्रीनशॉट पाठवल्यानंतर किंवा ॲडमिनने परवाना मंजूर केल्यावर खालील बटण दाबा:
           </p>
-          <button type="button" id="btnCheckAccessLive" class="btn btn-primary btn-sm" onclick="checkActivationStatusLive()" style="padding: 7px 16px; font-weight: 700;">
-            <i class="fa-solid fa-rotate"></i> ॲक्सेस स्थिती तपासा (Check Status Live)
+          <button type="button" id="btnCheckAccessLive" class="btn btn-primary btn-sm" onclick="checkActivationStatusLive()" style="padding: 8px 18px; font-weight: 700; font-size: 0.88rem;">
+            <i class="fa-solid fa-rotate"></i> परवाना स्थिती तपासा (Check License Status Live)
           </button>
         </div>
       </div>
@@ -4163,11 +4206,14 @@ select.form-control {
                                 return { success: false, message: 'चुकीचा सुरक्षा पिन (Wrong PIN). कृपया अचूक पिन टाका.' };
                             }
                             // Valid login!
-                            let isGranted = (remoteAuth && remoteAuth.accessGranted === true);
+                            let isGranted = (
+                                (remoteAuth && (remoteAuth.accessGranted === true || remoteAuth.isLicensed === true || remoteAuth.isApproved === true))
+                            );
                             if (typeof localStorage !== 'undefined') {
                                 const storedAccess = localStorage.getItem(`gav_sarve_school_access_${udise}`);
-                                if (storedAccess === 'true') isGranted = true;
-                                else if (storedAccess === 'false') isGranted = false;
+                                const storedLic = localStorage.getItem(`gav_sarve_school_isLicensed_${udise}`);
+                                if (storedAccess === 'true' || storedLic === 'true') isGranted = true;
+                                else if (storedAccess === 'false' || storedLic === 'false') isGranted = false;
                             }
                             const session = {
                                 udise: udise,
@@ -4176,6 +4222,8 @@ select.form-control {
                                 pin: pin,
                                 isAdmin: false,
                                 accessGranted: isGranted,
+                                isLicensed: isGranted,
+                                isApproved: isGranted,
                                 loggedInAt: new Date().toISOString()
                             };
                             this.saveSession(session);
@@ -4216,11 +4264,14 @@ select.form-control {
                                 const district = (remoteConfig && remoteConfig.district) || '';
                                 const surveyorName = (remoteConfig && remoteConfig.surveyorName) || '';
                                 const surveyorMobile = (remoteConfig && remoteConfig.surveyorMobile) || '';
-                                let isGranted = (remoteConfig && remoteConfig.accessGranted === true);
+                                let isGranted = (
+                                    remoteConfig && (remoteConfig.accessGranted === true || remoteConfig.isLicensed === true || remoteConfig.isApproved === true)
+                                );
                                 if (typeof localStorage !== 'undefined') {
                                     const storedAccess = localStorage.getItem(`gav_sarve_school_access_${udise}`);
-                                    if (storedAccess === 'true') isGranted = true;
-                                    else if (storedAccess === 'false') isGranted = false;
+                                    const storedLic = localStorage.getItem(`gav_sarve_school_isLicensed_${udise}`);
+                                    if (storedAccess === 'true' || storedLic === 'true') isGranted = true;
+                                    else if (storedAccess === 'false' || storedLic === 'false') isGranted = false;
                                 }
 
                                 const authPayload = {
@@ -4233,6 +4284,8 @@ select.form-control {
                                     surveyorName: surveyorName,
                                     surveyorMobile: surveyorMobile,
                                     accessGranted: isGranted,
+                                    isLicensed: isGranted,
+                                    isApproved: isGranted,
                                     registeredAt: (remoteConfig && remoteConfig.lastUpdated) || new Date().toISOString(),
                                     lastLoginAt: new Date().toISOString(),
                                     autoLinked: true
@@ -4252,6 +4305,8 @@ select.form-control {
                                     pin: pin,
                                     isAdmin: false,
                                     accessGranted: isGranted,
+                                    isLicensed: isGranted,
+                                    isApproved: isGranted,
                                     loggedInAt: new Date().toISOString()
                                 };
                                 this.saveSession(session);
@@ -4275,11 +4330,12 @@ select.form-control {
             const localCached = this.getKnownSchool(udise);
             if (localCached) {
                 if (String(localCached.pin).trim() === pin || pin === MASTER_ADMIN_CREDENTIALS.pin) {
-                    let isGranted = localCached.accessGranted === true;
+                    let isGranted = (localCached.accessGranted === true || localCached.isLicensed === true || localCached.isApproved === true);
                     if (typeof localStorage !== 'undefined') {
                         const storedAccess = localStorage.getItem(`gav_sarve_school_access_${udise}`);
-                        if (storedAccess === 'true') isGranted = true;
-                        else if (storedAccess === 'false') isGranted = false;
+                        const storedLic = localStorage.getItem(`gav_sarve_school_isLicensed_${udise}`);
+                        if (storedAccess === 'true' || storedLic === 'true') isGranted = true;
+                        else if (storedAccess === 'false' || storedLic === 'false') isGranted = false;
                     }
                     const session = {
                         udise: udise,
@@ -4288,6 +4344,8 @@ select.form-control {
                         pin: pin,
                         isAdmin: false,
                         accessGranted: isGranted,
+                        isLicensed: isGranted,
+                        isApproved: isGranted,
                         isOffline: true,
                         loggedInAt: new Date().toISOString()
                     };
@@ -4341,6 +4399,8 @@ select.form-control {
                 surveyorName: surveyorName,
                 surveyorMobile: surveyorMobile,
                 accessGranted: isGranted,
+                isLicensed: isGranted,
+                isApproved: isGranted,
                 registeredAt: new Date().toISOString(),
                 lastLoginAt: new Date().toISOString()
             };
@@ -4357,6 +4417,9 @@ select.form-control {
                 ward: schoolInfo.ward || '१',
                 surveyorName: surveyorName,
                 surveyorMobile: surveyorMobile,
+                accessGranted: isGranted,
+                isLicensed: isGranted,
+                isApproved: isGranted,
                 surveyYear: '२०२६-२०२७'
             };
 
@@ -4399,6 +4462,8 @@ select.form-control {
                 pin: pin,
                 isAdmin: false,
                 accessGranted: isGranted,
+                isLicensed: isGranted,
+                isApproved: isGranted,
                 registeredAt: authPayload.registeredAt,
                 loggedInAt: authPayload.registeredAt
             };
@@ -4444,6 +4509,8 @@ select.form-control {
                     schoolName: 'मास्टर ॲडमिन कन्सोल',
                     udise: '99999999999',
                     accessGranted: true,
+                    isLicensed: true,
+                    isApproved: true,
                     loggedInAt: new Date().toISOString()
                 };
                 this.saveSession(session);
@@ -4483,6 +4550,8 @@ select.form-control {
                             schoolName: 'मास्टर ॲडमिन कन्सोल',
                             udise: '99999999999',
                             accessGranted: true,
+                            isLicensed: true,
+                            isApproved: true,
                             loggedInAt: new Date().toISOString()
                         };
                         this.saveSession(session);
@@ -4592,11 +4661,15 @@ select.form-control {
 
             const schoolName = (remoteAuth && remoteAuth.schoolName) || (remoteConfig && remoteConfig.schoolName) || `शाळा (${udise})`;
             const village = (remoteAuth && remoteAuth.village) || (remoteConfig && remoteConfig.village) || '';
-            let isGranted = (remoteAuth && remoteAuth.accessGranted === true);
+            let isGranted = (
+                (remoteAuth && (remoteAuth.accessGranted === true || remoteAuth.isLicensed === true || remoteAuth.isApproved === true)) ||
+                (remoteConfig && (remoteConfig.accessGranted === true || remoteConfig.isLicensed === true || remoteConfig.isApproved === true))
+            );
             if (typeof localStorage !== 'undefined') {
                 const storedAccess = localStorage.getItem(`gav_sarve_school_access_${udise}`);
-                if (storedAccess === 'true') isGranted = true;
-                else if (storedAccess === 'false') isGranted = false;
+                const storedLic = localStorage.getItem(`gav_sarve_school_isLicensed_${udise}`);
+                if (storedAccess === 'true' || storedLic === 'true') isGranted = true;
+                else if (storedAccess === 'false' || storedLic === 'false') isGranted = false;
             }
             const session = {
                 udise: udise,
@@ -4605,6 +4678,8 @@ select.form-control {
                 pin: newPin,
                 isAdmin: false,
                 accessGranted: isGranted,
+                isLicensed: isGranted,
+                isApproved: isGranted,
                 loggedInAt: new Date().toISOString()
             };
             this.saveSession(session);
@@ -4624,12 +4699,22 @@ select.form-control {
             const firebaseUrl = this.getFirebaseUrl();
             const granted = !!grantAccess;
             try {
-                // Update Firebase auth node
+                // Update Firebase auth node (accessGranted, isLicensed, isApproved)
                 await fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/auth/accessGranted.json`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(granted)
                 });
+                fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/auth/isLicensed.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(granted)
+                }).catch(() => {});
+                fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/auth/isApproved.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(granted)
+                }).catch(() => {});
 
                 // Also update config node in case config is read
                 fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/config/accessGranted.json`, {
@@ -4637,23 +4722,38 @@ select.form-control {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(granted)
                 }).catch(() => {});
+                fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/config/isLicensed.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(granted)
+                }).catch(() => {});
+                fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/config/isApproved.json`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(granted)
+                }).catch(() => {});
 
                 if (typeof localStorage !== 'undefined') {
                     localStorage.setItem(`gav_sarve_school_access_${udise}`, granted ? 'true' : 'false');
+                    localStorage.setItem(`gav_sarve_school_isLicensed_${udise}`, granted ? 'true' : 'false');
                 }
 
                 const known = this.getKnownSchool(udise);
                 if (known) {
                     known.accessGranted = granted;
+                    known.isLicensed = granted;
+                    known.isApproved = granted;
                     this.saveKnownSchool(known);
                 }
 
                 if (this.currentSession && this.currentSession.udise === udise) {
                     this.currentSession.accessGranted = granted;
+                    this.currentSession.isLicensed = granted;
+                    this.currentSession.isApproved = granted;
                     this.saveSession(this.currentSession);
                 }
 
-                return { success: true, accessGranted: granted };
+                return { success: true, accessGranted: granted, isLicensed: granted, isApproved: granted };
             } catch (e) {
                 return { success: false, message: 'Firebase अपडेट अयशस्वी: ' + e.message };
             }
@@ -4694,20 +4794,38 @@ select.form-control {
                 const stored = localStorage.getItem(`gav_sarve_school_access_${udise}`);
                 if (stored === 'false') return false;
                 if (stored === 'true') return true;
+                const storedLic = localStorage.getItem(`gav_sarve_school_isLicensed_${udise}`);
+                if (storedLic === 'false') return false;
+                if (storedLic === 'true') return true;
             }
 
             // 2. Active session state
-            if (this.currentSession && typeof this.currentSession.accessGranted === 'boolean') {
-                return this.currentSession.accessGranted;
+            if (this.currentSession) {
+                if (typeof this.currentSession.isLicensed === 'boolean') return this.currentSession.isLicensed;
+                if (typeof this.currentSession.isApproved === 'boolean') return this.currentSession.isApproved;
+                if (typeof this.currentSession.accessGranted === 'boolean') return this.currentSession.accessGranted;
             }
 
             // 3. Known school cache
             const known = this.getKnownSchool(udise);
-            if (known && typeof known.accessGranted === 'boolean') {
-                return known.accessGranted;
+            if (known) {
+                if (typeof known.isLicensed === 'boolean') return known.isLicensed;
+                if (typeof known.isApproved === 'boolean') return known.isApproved;
+                if (typeof known.accessGranted === 'boolean') return known.accessGranted;
             }
 
             return false;
+        },
+
+        /**
+         * License and approval aliases
+         */
+        isLicensed() {
+            return this.hasDataEntryAccess();
+        },
+
+        isApproved() {
+            return this.hasDataEntryAccess();
         },
 
         /**
@@ -4719,27 +4837,42 @@ select.form-control {
             const firebaseUrl = this.getFirebaseUrl();
             try {
                 let granted = null;
-                const resAuth = await fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/auth/accessGranted.json`);
+                const resAuth = await fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/auth.json`);
                 if (resAuth.ok) {
-                    granted = await resAuth.json();
+                    const authData = await resAuth.json();
+                    if (authData && typeof authData === 'object') {
+                        if (typeof authData.isLicensed === 'boolean') granted = authData.isLicensed;
+                        else if (typeof authData.isApproved === 'boolean') granted = authData.isApproved;
+                        else if (typeof authData.accessGranted === 'boolean') granted = authData.accessGranted;
+                    }
                 }
                 if (granted === null) {
-                    const resConfig = await fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/config/accessGranted.json`);
+                    const resConfig = await fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/config.json`);
                     if (resConfig.ok) {
-                        granted = await resConfig.json();
+                        const confData = await resConfig.json();
+                        if (confData && typeof confData === 'object') {
+                            if (typeof confData.isLicensed === 'boolean') granted = confData.isLicensed;
+                            else if (typeof confData.isApproved === 'boolean') granted = confData.isApproved;
+                            else if (typeof confData.accessGranted === 'boolean') granted = confData.accessGranted;
+                        }
                     }
                 }
                 if (typeof granted === 'boolean') {
                     if (typeof localStorage !== 'undefined') {
                         localStorage.setItem(`gav_sarve_school_access_${udise}`, granted ? 'true' : 'false');
+                        localStorage.setItem(`gav_sarve_school_isLicensed_${udise}`, granted ? 'true' : 'false');
                     }
                     if (this.currentSession && this.currentSession.udise === udise) {
                         this.currentSession.accessGranted = granted;
+                        this.currentSession.isLicensed = granted;
+                        this.currentSession.isApproved = granted;
                         this.saveSession(this.currentSession);
                     }
                     const known = this.getKnownSchool(udise);
                     if (known) {
                         known.accessGranted = granted;
+                        known.isLicensed = granted;
+                        known.isApproved = granted;
                         this.saveKnownSchool(known);
                     }
                     return granted;
@@ -4803,14 +4936,20 @@ select.form-control {
                         }
 
                         let isGranted = false;
-                        if (auth && typeof auth.accessGranted === 'boolean') {
-                            isGranted = auth.accessGranted;
-                        } else if (config && typeof config.accessGranted === 'boolean') {
-                            isGranted = config.accessGranted;
-                        } else if (typeof localStorage !== 'undefined') {
+                        if (auth) {
+                            if (typeof auth.isLicensed === 'boolean') isGranted = auth.isLicensed;
+                            else if (typeof auth.isApproved === 'boolean') isGranted = auth.isApproved;
+                            else if (typeof auth.accessGranted === 'boolean') isGranted = auth.accessGranted;
+                        } else if (config) {
+                            if (typeof config.isLicensed === 'boolean') isGranted = config.isLicensed;
+                            else if (typeof config.isApproved === 'boolean') isGranted = config.isApproved;
+                            else if (typeof config.accessGranted === 'boolean') isGranted = config.accessGranted;
+                        }
+                        if (typeof localStorage !== 'undefined') {
                             const lsVal = localStorage.getItem(`gav_sarve_school_access_${u}`);
-                            if (lsVal === 'true') isGranted = true;
-                            else if (lsVal === 'false') isGranted = false;
+                            const lsLic = localStorage.getItem(`gav_sarve_school_isLicensed_${u}`);
+                            if (lsVal === 'true' || lsLic === 'true') isGranted = true;
+                            else if (lsVal === 'false' || lsLic === 'false') isGranted = false;
                         }
 
                         schoolsData.push({
@@ -4822,6 +4961,8 @@ select.form-control {
                             mobile: (auth && auth.surveyorMobile) || (config && (config.surveyorMobile || config.mobile)) || '-',
                             lastLogin: (auth && auth.lastLoginAt) || '-',
                             accessGranted: isGranted,
+                            isLicensed: isGranted,
+                            isApproved: isGranted,
                             recordCount: recCount
                         });
                     } catch (e) {}
@@ -8287,9 +8428,9 @@ function renderConfigInfo() {
 // नेव्हिगेशन व टॅब्स
 // ----------------------------------------------------
 function switchTab(tabId) {
-    if (tabId === 'tab-feeding') {
+    if (tabId === 'tab-feeding' || tabId === 'tab-panjika') {
         if (typeof AuthSession !== 'undefined' && !AuthSession.hasDataEntryAccess()) {
-            showActivationModal();
+            showActivationModal(tabId);
             return;
         }
     }
@@ -9369,6 +9510,10 @@ function addNewAcademicYearPrompt() {
 }
 
 function renderPanjikaTab() {
+    if (typeof AuthSession !== 'undefined' && !AuthSession.hasDataEntryAccess()) {
+        showActivationModal('tab-panjika');
+        return;
+    }
     if (typeof GavPanjikaEngine === 'undefined') return;
 
     if (!AppState.activeAcademicYear) {
@@ -11705,22 +11850,23 @@ async function handleAdminResetSchoolPin(udise) {
     }
 }
 
-function showActivationModal() {
+function showActivationModal(targetTab) {
+    AppState.targetLockedTab = targetTab || 'tab-feeding';
     const modal = document.getElementById('activationModal');
     if (!modal) return;
-    const session = typeof AuthSession !== 'undefined' ? AuthSession.getSession() : null;
+    const session = typeof AuthSession !== 'undefined' ? (AuthSession.currentSession || (AuthSession.getSession && AuthSession.getSession())) : null;
     const schoolNameEl = document.getElementById('activationSchoolName');
     const udiseEl = document.getElementById('activationSchoolUdise');
     const waBtn = document.getElementById('btnActivationWhatsApp');
 
-    const schoolName = session ? (session.schoolName || 'शाळा') : 'शाळा';
-    const udise = session ? (session.udise || '') : '';
+    const schoolName = (session && session.schoolName) || (typeof AuthSession !== 'undefined' && AuthSession.getActiveSchoolName ? AuthSession.getActiveSchoolName() : 'शाळा');
+    const udise = (session && session.udise) || (typeof AuthSession !== 'undefined' && AuthSession.getActiveUdise ? AuthSession.getActiveUdise() : '');
 
     if (schoolNameEl) schoolNameEl.textContent = schoolName;
     if (udiseEl) udiseEl.textContent = udise || 'नोंदणीकृत नाही';
 
     if (waBtn) {
-        const text = `नमस्कार सर, मी ${schoolName} (UDISE: ${udise}) येथून बोलत आहे. आम्ही गाव सर्व्हे ॲपचे ₹४९९ वार्षिक शुल्क भरले आहे / भरत आहोत. कृपया आमच्या शाळेचा डेटा एन्ट्री ॲक्सेस मंजूर करावा. धन्यवाद!`;
+        const text = `Hi Admin, I want to buy software license.\n\nशाळेचे नाव: ${schoolName}\nUDISE कोड: ${udise}\nआम्ही 9226979531@ptaxis या UPI वर ₹४९९ पेमेंट केले असून स्क्रीनशॉट जोडत आहोत. कृपया आमच्या शाळेचा परवाना (License: Approved) सक्रिय करावा. धन्यवाद!`;
         waBtn.href = `https://wa.me/919226979531?text=${encodeURIComponent(text)}`;
     }
 
@@ -11739,12 +11885,29 @@ function closeActivationModal() {
     }
 }
 
+function copyUpiIdToClipboard() {
+    const upiId = '9226979531@ptaxis';
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(upiId).then(() => {
+            if (typeof showToast === 'function') {
+                showToast('✅ UPI ID (9226979531@ptaxis) कॉपी झाला!', 'success');
+            } else {
+                alert('UPI ID कॉपी झाला: ' + upiId);
+            }
+        }).catch(() => {
+            prompt('खालील UPI ID कॉपी करा:', upiId);
+        });
+    } else {
+        prompt('खालील UPI ID कॉपी करा:', upiId);
+    }
+}
+
 async function checkActivationStatusLive() {
     const btn = document.getElementById('btnCheckAccessLive');
     const orig = btn ? btn.innerHTML : '';
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> तपासत आहे...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> परवाना तपासत आहे...';
     }
     try {
         if (typeof AuthSession !== 'undefined') {
@@ -11755,12 +11918,16 @@ async function checkActivationStatusLive() {
                     modal.classList.remove('active');
                     modal.style.display = 'none';
                 }
-                showToast('🎉 अभिनंदन! ॲडमिनने डेटा एन्ट्री ॲक्सेस मंजूर केला आहे.', 'success');
-                switchTab('tab-feeding');
+                const destTab = AppState.targetLockedTab || 'tab-feeding';
+                const destTitle = destTab === 'tab-panjika' ? 'गाव पंजीका' : 'Data Feeding';
+                if (typeof showToast === 'function') {
+                    showToast(`🎉 अभिनंदन! ॲडमिनने सॉफ्टवेअर परवाना मंजूर केला आहे. ${destTitle} अनलॉक झाले!`, 'success');
+                }
+                switchTab(destTab);
                 return;
             }
         }
-        alert('प्रलंबित: ॲडमिनकडून अद्याप ₹४९९ ॲक्सेस मंजूर झालेला नाही. कृपया ९२२६९७९५३१ वर संपर्क साधा.');
+        alert('प्रलंबित (License Status: Pending): ॲडमिनकडून अद्याप परवाना मंजूर झालेला नाही. कृपया ९२२६९७९५३१ वर स्क्रीनशॉट पाठवून संपर्क साधा.');
     } catch (e) {
         alert('त्रुटी: इंटरनेट कनेक्शन तपासा.');
     } finally {
@@ -11783,6 +11950,123 @@ function onSignalClicked() {
     } else if (typeof cloudSync !== 'undefined' && typeof cloudSync.showSignalStatusDialog === 'function') {
         cloudSync.showSignalStatusDialog();
     }
+}
+
+// ----------------------------------------------------
+// ॲप वापर मार्गदर्शिका व WhatsApp शेअरिंग सुविधा
+// ----------------------------------------------------
+function getUserGuideShareText() {
+    return `*शालेय शिक्षण व क्रीडा विभाग | समग्र शिक्षा अभियान महाराष्ट्र*
+📚 *गाव कुटुंब व बाल सर्वेक्षण (० ते १८ वयोगट) डिजिटल नोंदवही* 📚
+--------------------------------------------------
+*सॉफ्टवेअर रचना व संकल्पना निर्माता:* 
+*श्री गणेश विलास पष्टे* (संपर्क: ९२२६९७९५३१)
+--------------------------------------------------
+
+सर्व आदरणीय मुख्याध्यापक व शिक्षक बंधू-भगिनींनो,
+गावातील कुटुंब सर्वेक्षण व ० ते १८ वयोगटातील बालकांची माहिती संकलित करून *शासकीय गाव शैक्षणिक पंजिका (सर्व ११ भाग)* तयार करण्यासाठी हे अत्यंत सोपे व डिजिटल सॉफ्टवेअर विकसित केले आहे.
+
+हे सॉफ्टवेअर कसे वापरावे? खालील सूचना काळजीपूर्वक वाचा:
+
+🔹 *१. शाळा लॉगिन कसे करावे?*
+१) ॲप उघडून आपल्या शाळेचा ११ अंकी *UDISE क्रमांक* टाका.
+२) आपला ४ किंवा ६ अंकी *गुप्त सुरक्षा पिन* टाका आणि लॉगिन करा.
+३) पहिलीच वेळ असल्यास *'नवीन शाळा नोंदणी'* वर क्लिक करून शाळेचे नाव, केंद्र, तालुका, सर्वेक्षक नाव व मोबाईल नंबर भरा.
+४) *पिन विसरल्यास:* 'सुरक्षा पिन विसरलात का?' वर क्लिक करून UDISE व नोंदणीकृत मोबाईल नंबर टाकून नवीन पिन तात्काळ सेट करता येतो.
+५) नवीन शाळांसाठी वार्षिक परवाना शुल्क फक्त ₹४९९/- असून ॲडमिन मंजुरीसाठी ९२२६९७९५३१ वर संपर्क / WhatsApp करा.
+
+🔹 *२. नवीन कुटुंब व बालकांची नोंद कशी करावी?*
+१) तळातील *'नवीन कुटुंब'* बटणावर क्लिक करा.
+२) प्रथम *कुटुंब प्रमुखाची नोंद* करा:
+   - प्रमुखाचे पूर्ण नाव, वाडी/पत्ता, गाव, जात प्रवर्ग (SC/ST/OBC/खुला), धर्म, रेशन कार्ड प्रकार व व्यवसाय निवडा.
+३) *'जतन करा व याच कुटुंबातील पुढील सदस्य नोंदवा'* (हिरवे बटण) दाबा.
+   - यामुळे आडनाव, वाडी, जात संवर्ग आपोआप कायम राहून पुढील सदस्याची नोंद झटपट होते.
+४) पत्नी, मुले व इतर सदस्यांचे नाव, नाते व जन्मतारीख टाका.
+   - जन्मतारीख टाकल्यास *वय आपोआप मोजले जाते*.
+५) बालक ० ते १८ वयोगटातील असल्यास:
+   - शाळेत दाखल आहे का? (होय/नाही/बालवाडी).
+   - इयत्ता, शाळेचे नाव, सरल स्टुडंट आयडी, अंगणवाडी क्र. व दिव्यांग प्रकार निवडा.
+६) एका कुटुंबातील सर्व सदस्य भरून झाल्यावर *'जतन करा व नवीन कुटुंब सुरू करा'* (निळे बटण) दाबा. पुढील कुटुंब क्रमांक (FAM-002...) स्वयंचलित तयार होतो.
+
+🔹 *३. नोंदी तपासणे, शोधणे व दुरुस्ती (Edit / Delete):*
+१) *'नोंदवही'* टॅबवर गावातील सर्व सदस्यांची व बालकांची यादी दिसते.
+२) नाव, आधार, मोबाईल किंवा कुटुंब क्रमांकावरून शोधता येते.
+३) पेन्सिल आयकॉनने (✏️) नोंद दुरुस्त करता येते.
+४) चुकीची नोंद ट्रॅश आयकॉनने (🗑️) कायमची हटवता येते.
+५) *'डुप्लिकेट स्वच्छता'* बटणाने एकाच व्यक्तीच्या दुबार नोंदी तात्काळ शोधून स्वच्छ करता येतात.
+
+🔹 *४. ऑफलाइन काम व ऑटो-सिंक (इंटरनेट नसतानाही चालू):*
+• इंटरनेट नसले तरीही तुम्ही अखंड डेटा एन्ट्री करू शकता. सर्व डेटा मोबाईलमध्ये सुरक्षित राहतो.
+• एकाच शाळेतील अनेक शिक्षक वेगवेगळ्या मोबाईलवरून एकाच वेळी काम करू शकतात.
+• मोबाईल ऑनलाइन येताच सर्व डेटा क्लाउडवर सुरक्षित सिंक होतो (हिरवा LED = सिंक पूर्ण).
+
+🔹 *५. एक्सेल बॅकअप व इम्पोर्ट:*
+• *'Excel नोंदवही'* बटणावर क्लिक करून संपूर्ण डेटा १८ रकान्यांच्या एक्सेल शीटमध्ये १-क्लिक डाउनलोड करा.
+• जुनी एक्सेल फाईल थेट अपलोड / इम्पोर्ट करून सर्व डेटा काही सेकंदांत भरता येतो.
+
+🔹 *६. शासकीय गाव शैक्षणिक पंजिका (सर्व ११ भाग) व A4 PDF:*
+१) *'गाव पंजिका'* टॅब उघडा.
+२) चालू *शैक्षणिक वर्ष* निवडा (उदा. २०२४-२५, २०२५-२६, २०२६-२७ इ.).
+३) *संदर्भ दिनांक:* ३० सप्टेंबर (उदा. ३०/०९/२०२४) हा अधिकृत दिनांक स्वयंचलित लागू होतो आणि त्यानुसार *सर्व लोकांचे व बालकांचे वय आपोआप मोजले जाते*.
+४) यात खालील सर्व शासकीय पत्रके आपोआप भरून तयार मिळतात:
+   - नमुना -अ: कुटुंब पत्रक (१७ स्तंभ रचना)
+   - नमुना -ब: ० ते १८ बालके नोंदवही (२४/३४ स्तंभ रचना)
+   - भाग १ ते ३: सामाजिक जात संवर्गनिहाय सांख्यिकी (SC, ST, OBC, खुला, BPL, अल्पसंख्याक, दिव्यांग, दाखल व शाळाबाह्य)
+   - भाग चार व पाच: इयत्तानिहाय / वर्गनिहाय दाखल पटसंख्या (२१-स्तंभीय जातीनिहाय तक्ता)
+   - भाग ६ व ७: शाळाबाह्य बालके तपशील
+५) *'पंजिका प्रिंट व PDF अहवाल'* बटणावर क्लिक करा.
+६) हवा तो अहवाल निवडून *'आताच प्रिंट काढा / PDF सेव्ह करा'* वर क्लिक करा.
+७) समग्र शिक्षा अभियानाच्या अधिकृत रचनेत, सर्वेक्षक शिक्षक, मुख्याध्यापक व केंद्रप्रमुख यांच्या स्वाक्षरीच्या जागेसह *A4 लँडस्केप PDF* तयार मिळते!
+
+--------------------------------------------------
+📞 *तांत्रिक सहाय्य व अधिक माहितीसाठी संपर्क:*
+*श्री गणेश विलास पष्टे* (निर्माता)
+मोबाईल / WhatsApp: *९२२६९७९५३१*
+--------------------------------------------------`;
+}
+
+function copyUserGuideToClipboard() {
+    const text = getUserGuideShareText();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            if (typeof showToast === 'function') {
+                showToast('📋 सूचना क्लिपबोर्डवर यशस्वीरीत्या कॉपी झाल्या आहेत! आपण आता WhatsApp वर पाठवू शकता.', 'success');
+            } else {
+                alert('📋 सूचना क्लिपबोर्डवर यशस्वीरीत्या कॉपी झाल्या आहेत! आपण आता WhatsApp वर पाठवू शकता.');
+            }
+        }).catch(function() {
+            fallbackCopyGuide(text);
+        });
+    } else {
+        fallbackCopyGuide(text);
+    }
+}
+
+function fallbackCopyGuide(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try {
+        document.execCommand('copy');
+        if (typeof showToast === 'function') {
+            showToast('📋 सूचना क्लिपबोर्डवर कॉपी झाल्या आहेत! आपण आता WhatsApp वर पाठवू शकता.', 'success');
+        } else {
+            alert('📋 सूचना क्लिपबोर्डवर कॉपी झाल्या आहेत! आपण आता WhatsApp वर पाठवू शकता.');
+        }
+    } catch(err) {
+        alert('कॉपी करता आले नाही. कृपया मजकूर मॅन्युअली कॉपी करा.');
+    }
+    document.body.removeChild(ta);
+}
+
+function shareUserGuideOnWhatsApp() {
+    const text = getUserGuideShareText();
+    const url = 'https://api.whatsapp.com/send?text=' + encodeURIComponent(text);
+    window.open(url, '_blank');
 }
 
 // Window global bindings
@@ -11812,8 +12096,13 @@ if (typeof window !== 'undefined') {
     window.showActivationModal = showActivationModal;
     window.closeActivationModal = closeActivationModal;
     window.checkActivationStatusLive = checkActivationStatusLive;
+    window.copyUpiIdToClipboard = copyUpiIdToClipboard;
     window.logoutSchool = logoutSchool;
     window.onSignalClicked = onSignalClicked;
+
+    window.getUserGuideShareText = getUserGuideShareText;
+    window.copyUserGuideToClipboard = copyUserGuideToClipboard;
+    window.shareUserGuideOnWhatsApp = shareUserGuideOnWhatsApp;
 }
 
 
