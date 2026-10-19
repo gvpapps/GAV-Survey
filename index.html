@@ -4215,10 +4215,12 @@ select.form-control {
                                 if (storedAccess === 'true' || storedLic === 'true') isGranted = true;
                                 else if (storedAccess === 'false' || storedLic === 'false') isGranted = false;
                             }
+                            const surveyorMobile = String(remoteAuth.surveyorMobile || '').replace(/[^0-9]/g, '').slice(-10);
                             const session = {
                                 udise: udise,
                                 schoolName: remoteAuth.schoolName || `शाळा (UDISE: ${udise})`,
                                 village: remoteAuth.village || '',
+                                surveyorMobile: surveyorMobile,
                                 pin: pin,
                                 isAdmin: false,
                                 accessGranted: isGranted,
@@ -4235,6 +4237,20 @@ select.form-control {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify(new Date().toISOString())
                             }).catch(() => {});
+
+                            // Index registered mobile in Firebase for fast uniqueness checks
+                            if (surveyorMobile && surveyorMobile.length === 10) {
+                                fetch(`${firebaseUrl}/gav_sarve/registered_mobiles/${surveyorMobile}.json`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({
+                                        udise: udise,
+                                        schoolName: session.schoolName,
+                                        mobile: surveyorMobile,
+                                        lastLoginAt: session.loggedInAt
+                                    })
+                                }).catch(() => {});
+                            }
 
                             return { success: true, session: session, isNew: false };
                         } else {
@@ -4365,7 +4381,7 @@ select.form-control {
         },
 
         /**
-         * Register a New School
+         * Register a New School (Strict Unique UDISE & Mobile Verification)
          */
         async registerSchool(schoolInfo) {
             const udise = String(schoolInfo.udise || '').trim().replace(/[^0-9]/g, '');
@@ -4375,7 +4391,8 @@ select.form-control {
             const taluka = String(schoolInfo.taluka || '').trim();
             const district = String(schoolInfo.district || '').trim();
             const surveyorName = String(schoolInfo.surveyorName || '').trim();
-            const surveyorMobile = String(schoolInfo.surveyorMobile || '').trim();
+            const rawMobile = String(schoolInfo.surveyorMobile || schoolInfo.mobile || '').trim().replace(/[^0-9]/g, '');
+            const cleanMobile = rawMobile.slice(-10);
 
             if (!udise || udise.length !== 11) {
                 return { success: false, message: 'कृपया अचूक ११ अंकी UDISE क्रमांक टाका.' };
@@ -4386,8 +4403,138 @@ select.form-control {
             if (!schoolName) {
                 return { success: false, message: 'कृपया शाळेचे पूर्ण नाव प्रविष्ट करा.' };
             }
+            if (!cleanMobile || cleanMobile.length !== 10) {
+                return { success: false, message: 'कृपया अचूक १० अंकी मोबाईल नंबर प्रविष्ट करा.' };
+            }
 
             const firebaseUrl = this.getFirebaseUrl();
+            const isOnline = (typeof navigator === 'undefined' || navigator.onLine !== false);
+
+            // ==========================================
+            // CHECK 1: Ensure UDISE is NOT already registered
+            // ==========================================
+            // Local Cache Check
+            const localCached = this.getKnownSchool(udise);
+            if (localCached && (localCached.pin || localCached.registeredAt)) {
+                return {
+                    success: false,
+                    message: `हा UDISE क्रमांक (${udise}) आधीच नोंदणीकृत आहे! कृपया 'शाळा लॉगिन' करा किंवा पिन विसरला असल्यास 'पिन विसरलात?' पर्याय वापरा.`
+                };
+            }
+
+            // Remote Firebase Check
+            if (isOnline) {
+                try {
+                    const uRes = await fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/auth.json`);
+                    if (uRes.ok) {
+                        const existingAuth = await uRes.json();
+                        if (existingAuth && (existingAuth.pin || existingAuth.registeredAt)) {
+                            return {
+                                success: false,
+                                message: `हा UDISE क्रमांक (${udise}) आधीच नोंदणीकृत आहे! कृपया 'शाळा लॉगिन' करा किंवा पिन विसरला असल्यास 'पिन विसरलात?' पर्याय वापरा.`
+                            };
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Online UDISE existence check error:", e);
+                }
+            }
+
+            // ==========================================
+            // CHECK 2: Ensure Mobile Number is UNIQUE
+            // ==========================================
+            // 1. Local Cache Check across all known schools
+            try {
+                const raw = localStorage.getItem(KNOWN_SCHOOLS_KEY);
+                const list = raw ? JSON.parse(raw) : {};
+                for (const u in list) {
+                    if (String(u).trim() !== udise) {
+                        const s = list[u];
+                        const sMob = String((s && (s.surveyorMobile || s.mobile)) || '').replace(/[^0-9]/g, '').slice(-10);
+                        if (sMob && sMob === cleanMobile) {
+                            const sName = (s && s.schoolName) || `UDISE: ${u}`;
+                            return {
+                                success: false,
+                                message: `हा मोबाईल नंबर (${cleanMobile}) आधीच '${sName}' (UDISE: ${u}) या शाळेसाठी नोंदणीकृत आहे. एका मोबाईल नंबरवर फक्त एकच शाळा नोंदणी करता येईल.`
+                            };
+                        }
+                    }
+                }
+            } catch (e) {}
+
+            // 2. Remote Firebase Check
+            if (isOnline) {
+                try {
+                    // Fast index lookup
+                    const mobRes = await fetch(`${firebaseUrl}/gav_sarve/registered_mobiles/${cleanMobile}.json`);
+                    if (mobRes.ok) {
+                        const mobRecord = await mobRes.json();
+                        if (mobRecord && mobRecord.udise && String(mobRecord.udise).trim() !== udise) {
+                            const otherName = mobRecord.schoolName || `UDISE: ${mobRecord.udise}`;
+                            return {
+                                success: false,
+                                message: `हा मोबाईल नंबर (${cleanMobile}) आधीच '${otherName}' (UDISE: ${mobRecord.udise}) या शाळेसाठी नोंदणीकृत आहे. एका मोबाईल नंबरवर फक्त एकच शाळा नोंदणी करता येईल.`
+                            };
+                        }
+                    }
+
+                    // Deep scan across schools list to catch existing schools
+                    const schoolsRes = await fetch(`${firebaseUrl}/gav_sarve/schools.json?shallow=true`);
+                    if (schoolsRes.ok) {
+                        const allSchoolsObj = await schoolsRes.json();
+                        const schoolKeys = allSchoolsObj ? Object.keys(allSchoolsObj) : [];
+                        for (const sUdise of schoolKeys) {
+                            if (String(sUdise).trim() !== udise) {
+                                try {
+                                    let registeredMob = '';
+                                    let registeredName = '';
+                                    const sAuthRes = await fetch(`${firebaseUrl}/gav_sarve/schools/${sUdise}/auth.json`);
+                                    if (sAuthRes.ok) {
+                                        const sAuth = await sAuthRes.json();
+                                        if (sAuth) {
+                                            registeredMob = String(sAuth.surveyorMobile || '').replace(/[^0-9]/g, '').slice(-10);
+                                            registeredName = sAuth.schoolName || `शाळा (${sUdise})`;
+                                        }
+                                    }
+                                    if (!registeredMob) {
+                                        const sConfRes = await fetch(`${firebaseUrl}/gav_sarve/schools/${sUdise}/config.json`);
+                                        if (sConfRes.ok) {
+                                            const sConf = await sConfRes.json();
+                                            if (sConf) {
+                                                registeredMob = String(sConf.surveyorMobile || sConf.mobile || '').replace(/[^0-9]/g, '').slice(-10);
+                                                registeredName = registeredName || (sConf.schoolName || `शाळा (${sUdise})`);
+                                            }
+                                        }
+                                    }
+
+                                    if (registeredMob && registeredMob === cleanMobile) {
+                                        // Auto-backfill mobile index for fast subsequent queries
+                                        fetch(`${firebaseUrl}/gav_sarve/registered_mobiles/${cleanMobile}.json`, {
+                                            method: 'PUT',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                udise: sUdise,
+                                                schoolName: registeredName,
+                                                mobile: cleanMobile,
+                                                registeredAt: new Date().toISOString()
+                                            })
+                                        }).catch(() => {});
+
+                                        return {
+                                            success: false,
+                                            message: `हा मोबाईल नंबर (${cleanMobile}) आधीच '${registeredName}' (UDISE: ${sUdise}) या शाळेसाठी नोंदणीकृत आहे. एका मोबाईल नंबरवर फक्त एकच शाळा नोंदणी करता येईल.`
+                                        };
+                                    }
+                                } catch (sErr) {}
+                            }
+                        }
+                    }
+                } catch (netErr) {}
+            }
+
+            // ==========================================
+            // PROCEED WITH REGISTRATION
+            // ==========================================
             const isGranted = (udise === '27240304501' || udise === '27240219201');
             const authPayload = {
                 udise: udise,
@@ -4397,7 +4544,7 @@ select.form-control {
                 taluka: taluka,
                 district: district,
                 surveyorName: surveyorName,
-                surveyorMobile: surveyorMobile,
+                surveyorMobile: cleanMobile,
                 accessGranted: isGranted,
                 isLicensed: isGranted,
                 isApproved: isGranted,
@@ -4416,7 +4563,7 @@ select.form-control {
                 gp: schoolInfo.gp || village,
                 ward: schoolInfo.ward || '१',
                 surveyorName: surveyorName,
-                surveyorMobile: surveyorMobile,
+                surveyorMobile: cleanMobile,
                 accessGranted: isGranted,
                 isLicensed: isGranted,
                 isApproved: isGranted,
@@ -4424,7 +4571,6 @@ select.form-control {
             };
 
             // Push to Firebase if online
-            const isOnline = (typeof navigator === 'undefined' || navigator.onLine !== false);
             if (isOnline) {
                 try {
                     await fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/auth.json`, {
@@ -4432,6 +4578,18 @@ select.form-control {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(authPayload)
                     });
+
+                    // Index mobile number in Firebase
+                    fetch(`${firebaseUrl}/gav_sarve/registered_mobiles/${cleanMobile}.json`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            udise: udise,
+                            schoolName: schoolName,
+                            mobile: cleanMobile,
+                            registeredAt: authPayload.registeredAt
+                        })
+                    }).catch(() => {});
 
                     // Preserve existing config fields if school already exists
                     let mergedConfig = configPayload;
@@ -4459,6 +4617,7 @@ select.form-control {
                 udise: udise,
                 schoolName: schoolName,
                 village: village,
+                surveyorMobile: cleanMobile,
                 pin: pin,
                 isAdmin: false,
                 accessGranted: isGranted,
@@ -11592,16 +11751,48 @@ async function handleSchoolRegisterSubmit(e) {
     const errBox = document.getElementById('authRegError');
     if (errBox) { errBox.style.display = 'none'; }
 
+    const cleanUdise = udise.replace(/[^0-9]/g, '');
+    const cleanMobile = surveyorMobile.replace(/[^0-9]/g, '').slice(-10);
+
+    if (!cleanUdise || cleanUdise.length !== 11) {
+        if (errBox) {
+            errBox.style.display = 'block';
+            errBox.textContent = 'कृपया अचूक ११ अंकी UDISE क्रमांक टाका.';
+        }
+        return;
+    }
+    if (!pin || pin.length < 4) {
+        if (errBox) {
+            errBox.style.display = 'block';
+            errBox.textContent = 'सुरक्षा पिन किमान ४ अंकी असावा.';
+        }
+        return;
+    }
+    if (!schoolName) {
+        if (errBox) {
+            errBox.style.display = 'block';
+            errBox.textContent = 'कृपया शाळेचे पूर्ण नाव प्रविष्ट करा.';
+        }
+        return;
+    }
+    if (!cleanMobile || cleanMobile.length !== 10) {
+        if (errBox) {
+            errBox.style.display = 'block';
+            errBox.textContent = 'कृपया अचूक १० अंकी मोबाईल नंबर प्रविष्ट करा.';
+        }
+        return;
+    }
+
     const btn = document.getElementById('btnSubmitSchoolRegister');
     const origText = btn ? btn.innerHTML : '';
     if (btn) {
         btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> नोंदणी होत आहे...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> नोंदणी तपासत आहे...';
     }
 
     try {
         const result = await AuthSession.registerSchool({
-            udise, pin, schoolName, village, taluka, district, surveyorName, surveyorMobile
+            udise: cleanUdise, pin, schoolName, village, taluka, district, surveyorName, surveyorMobile: cleanMobile
         });
         if (result.success) {
             closeLoginModal();
@@ -11611,6 +11802,9 @@ async function handleSchoolRegisterSubmit(e) {
             if (errBox) {
                 errBox.style.display = 'block';
                 errBox.textContent = result.message || 'नोंदणी अयशस्वी.';
+                if (errBox.scrollIntoView) {
+                    errBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
             } else {
                 alert(result.message || 'नोंदणी अयशस्वी.');
             }
