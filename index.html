@@ -2388,6 +2388,23 @@ select.form-control {
   </header>
 
   <!-- ====================================================
+       Master Admin Impersonation Banner
+       ==================================================== -->
+  <div id="adminImpersonationBanner" class="no-print" style="display: none; background: linear-gradient(90deg, #b45309, #d97706); color: #ffffff; padding: 8px 16px; font-size: 0.88rem; border-bottom: 2px solid #f59e0b; box-shadow: 0 2px 6px rgba(0,0,0,0.15); align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="background: #fff; color: #b45309; padding: 2px 7px; border-radius: 4px; font-weight: 800; font-size: 0.78rem;">
+        <i class="fa-solid fa-shield-halved"></i> ॲडमिन मोड
+      </span>
+      <span>आपण सध्या <b id="impersonatedSchoolName">शाळा</b> (UDISE: <code id="impersonatedSchoolUdise" style="background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 3px; color: #fff;">-</code>) चे रेकॉर्ड पाहत आहात.</span>
+    </div>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <button type="button" class="btn btn-sm" onclick="returnToAdminConsole()" style="background: #ffffff; color: #92400e; font-weight: 800; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-size: 0.82rem;">
+        <i class="fa-solid fa-arrow-left"></i> ॲडमिन कन्सोलवर परत जा
+      </button>
+    </div>
+  </div>
+
+  <!-- ====================================================
        Top Desktop Navigation Tabs
        ==================================================== -->
   <nav class="desktop-nav no-print">
@@ -2420,6 +2437,10 @@ select.form-control {
         <i class="fa-solid fa-circle-question"></i>
         <span>मार्गदर्शक सूचना</span>
       </button>
+      <button class="nav-tab-btn" id="navTabAdmin" data-tab="tab-admin" style="display: none; background: #fef3c7; color: #92400e; font-weight: 700; border: 1px solid #fcd34d;">
+        <i class="fa-solid fa-crown"></i>
+        <span>मास्टर ॲडमिन</span>
+      </button>
     </div>
   </nav>
 
@@ -2427,6 +2448,181 @@ select.form-control {
        Main Content Panes
        ==================================================== -->
   <main class="main-content">
+
+    <!-- ================================================
+         TAB 0: मास्टर ॲडमिन कन्सोल (Master Admin Console)
+         ================================================ -->
+    <section id="tab-admin" class="tab-pane">
+      <!-- Admin Hero Banner -->
+      <div class="panel-card" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%); color: #ffffff; border: 2px solid #f59e0b; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);">
+        <div class="panel-body" style="padding: 22px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div style="display: flex; align-items: center; gap: 16px;">
+            <div style="width: 56px; height: 56px; min-width: 56px; background: rgba(245, 158, 11, 0.15); border: 2px solid #f59e0b; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #fbbf24;">
+              <i class="fa-solid fa-crown"></i>
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <h2 style="margin: 0; font-size: 1.35rem; font-weight: 800; color: #ffffff; letter-spacing: -0.02em;">
+                  मास्टर ॲडमिन कन्सोल (Master Admin Control Center)
+                </h2>
+                <span class="badge" style="background: #f59e0b; color: #000; font-weight: 800; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px;">
+                  <i class="fa-solid fa-shield-halved"></i> मुख्य प्रशासक
+                </span>
+              </div>
+              <p style="margin: 6px 0 0 0; font-size: 0.86rem; color: #cbd5e1; line-height: 1.5;">
+                <i class="fa-solid fa-user-tie" style="color: #fbbf24;"></i> <b>मुख्य प्रशासक व सॉफ्टवेअर रचना: श्री गणेश विलास पष्टे</b> | 
+                <i class="fa-solid fa-phone" style="color: #38bdf8;"></i> संपर्क: <b>९२२६९७९५३१</b> | 
+                <i class="fa-solid fa-qrcode" style="color: #34d399;"></i> UPI ID: <b>9226979531@ptaxis</b>
+              </p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline-info btn-sm" onclick="renderAdminConsole()" style="background: rgba(56, 189, 248, 0.1); border-color: #38bdf8; color: #38bdf8; font-weight: 700; padding: 7px 14px; border-radius: 6px;">
+              <i class="fa-solid fa-rotate"></i> रीफ्रेश यादी
+            </button>
+            <button type="button" class="btn btn-danger btn-sm" onclick="logoutSchool()" style="font-weight: 700; padding: 7px 14px; border-radius: 6px;">
+              <i class="fa-solid fa-right-from-bracket"></i> ॲडमिन लॉगआउट
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Metric Counter Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-bottom: 20px;">
+        <div class="panel-card" style="border-left: 5px solid #3b82f6; margin: 0;">
+          <div class="panel-body" style="padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <p style="margin: 0; font-size: 0.78rem; color: #64748b; font-weight: 700; text-transform: uppercase;">एकूण नोंदणीकृत शाळा</p>
+              <h3 id="adminMetricTotalSchools" style="margin: 4px 0 0 0; font-size: 1.55rem; font-weight: 800; color: #1e3a8a;">0</h3>
+            </div>
+            <div style="width: 42px; height: 42px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              <i class="fa-solid fa-school"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card" style="border-left: 5px solid #16a34a; margin: 0;">
+          <div class="panel-body" style="padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <p style="margin: 0; font-size: 0.78rem; color: #64748b; font-weight: 700; text-transform: uppercase;">सक्रिय परवाने (Approved ₹४९९)</p>
+              <h3 id="adminMetricActiveLicenses" style="margin: 4px 0 0 0; font-size: 1.55rem; font-weight: 800; color: #15803d;">0</h3>
+            </div>
+            <div style="width: 42px; height: 42px; border-radius: 10px; background: #f0fdf4; color: #16a34a; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card" style="border-left: 5px solid #dc2626; margin: 0;">
+          <div class="panel-body" style="padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <p style="margin: 0; font-size: 0.78rem; color: #64748b; font-weight: 700; text-transform: uppercase;">प्रलंबित परवाने (Pending)</p>
+              <h3 id="adminMetricPendingLicenses" style="margin: 4px 0 0 0; font-size: 1.55rem; font-weight: 800; color: #b91c1c;">0</h3>
+            </div>
+            <div style="width: 42px; height: 42px; border-radius: 10px; background: #fef2f2; color: #dc2626; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-card" style="border-left: 5px solid #8b5cf6; margin: 0;">
+          <div class="panel-body" style="padding: 14px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <p style="margin: 0; font-size: 0.78rem; color: #64748b; font-weight: 700; text-transform: uppercase;">एकूण कुटुंब व बाल नोंदी</p>
+              <h3 id="adminMetricTotalRecords" style="margin: 4px 0 0 0; font-size: 1.55rem; font-weight: 800; color: #6d28d9;">0</h3>
+            </div>
+            <div style="width: 42px; height: 42px; border-radius: 10px; background: #f5f3ff; color: #7c3aed; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+              <i class="fa-solid fa-database"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Configuration Cards (Firebase RTDB + Admin Password) -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; margin-bottom: 20px;">
+        <!-- Firebase URL Configuration -->
+        <div class="panel-card" style="margin: 0;">
+          <div class="panel-header" style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #1e3a8a;">
+              <i class="fa-solid fa-database text-warning"></i> केंद्रीय Firebase Realtime Database
+            </h4>
+            <span class="badge" style="background: #fef3c7; color: #92400e; font-size: 0.72rem; font-weight: 700;">RTDB मास्टर</span>
+          </div>
+          <div class="panel-body" style="padding: 16px;">
+            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 10px;">
+              सर्व शाळांच्या ऑनलाईन बॅकअप व परवाना मंजुरीसाठी वापरण्यात येणारा मुख्य Firebase Database URL:
+            </p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <input type="url" id="adminFirebaseUrlMain" class="form-control" style="flex: 1; min-width: 200px; font-family: monospace; font-size: 0.82rem;" placeholder="https://your-project-default-rtdb.firebaseio.com/">
+              <button type="button" class="btn btn-primary btn-sm" onclick="handleAdminSaveUrl('adminFirebaseUrlMain')" style="font-weight: 700;">
+                <i class="fa-solid fa-floppy-disk"></i> जतन करा
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Admin Password Configuration -->
+        <div class="panel-card" style="margin: 0;">
+          <div class="panel-header" style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: #1e3a8a;">
+              <i class="fa-solid fa-key text-warning"></i> मास्टर ॲडमिन पासवर्ड बदला
+            </h4>
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; font-size: 0.72rem; font-weight: 700;">सुरक्षा</span>
+          </div>
+          <div class="panel-body" style="padding: 16px;">
+            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 10px;">
+              मास्टर ॲडमिन कन्सोल लॉगिनसाठी नवीन गुप्त पासवर्ड सेट करा:
+            </p>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <input type="password" id="adminNewPwInputMain" class="form-control" style="flex: 1; min-width: 180px; font-size: 0.85rem;" placeholder="नवीन पासवर्ड (किमान ४ अक्षरे)">
+              <button type="button" class="btn btn-warning btn-sm" onclick="handleAdminSetPassword('adminNewPwInputMain')" style="font-weight: 700; color: #1e293b;">
+                <i class="fa-solid fa-lock"></i> पासवर्ड बदला
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Registered Schools Management Table -->
+      <div class="panel-card" style="margin-bottom: 24px;">
+        <div class="panel-header" style="background: #f8fafc; border-bottom: 1.5px solid #e2e8f0; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3 style="margin: 0; font-size: 1.05rem; font-weight: 800; color: #0f172a;">
+              <i class="fa-solid fa-school-flag text-primary"></i> नोंदणीकृत शाळांचे व्यवस्थापन व परवाना नियंत्रण
+            </h3>
+            <p style="margin: 3px 0 0 0; font-size: 0.78rem; color: #64748b;">
+              शाळांना ॲक्सेस देणे (मंजूर ₹४९९), सुरक्षा पिन बदलणे, शाळा उघडून डेटा पाहणे किंवा डिलीट करणे.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <button type="button" class="btn btn-outline-primary btn-sm" onclick="renderAdminConsole()" style="font-weight: 700; font-size: 0.8rem;">
+              <i class="fa-solid fa-rotate"></i> रीफ्रेश डेटा
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-body" style="padding: 0;">
+          <div style="overflow-x: auto;">
+            <table class="panjika-table" style="font-size: 0.84rem; width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background: #f1f5f9; text-align: left; border-bottom: 2px solid #cbd5e1;">
+                  <th style="padding: 10px 12px; width: 45px; text-align: center;">#</th>
+                  <th style="padding: 10px 12px;">UDISE कोड</th>
+                  <th style="padding: 10px 12px;">शाळा व गाव</th>
+                  <th style="padding: 10px 12px;">सर्वेक्षक शिक्षक व मोबाईल</th>
+                  <th style="padding: 10px 12px; text-align: center;">नोंदी</th>
+                  <th style="padding: 10px 12px; text-align: center;">परवाना (₹४९९)</th>
+                  <th style="padding: 10px 12px; text-align: center; min-width: 270px;">कृती (Actions)</th>
+                </tr>
+              </thead>
+              <tbody id="adminSchoolsTableBodyMain">
+                <tr><td colspan="7" style="text-align: center; padding: 20px; color: #64748b;"><i class="fa-solid fa-spinner fa-spin"></i> शाळा लोड होत आहेत...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- ================================================
          TAB 1: डॅशबोर्ड (Analytics Dashboard)
@@ -3384,6 +3580,10 @@ select.form-control {
       <span class="icon"><i class="fa-solid fa-sliders"></i></span>
       <span>सेटिंग्ज</span>
     </button>
+    <button class="bottom-nav-item" id="bottomNavTabAdmin" data-tab="tab-admin" style="display: none;" title="मास्टर ॲडमिन कन्सोल">
+      <span class="icon"><i class="fa-solid fa-crown"></i></span>
+      <span>ॲडमिन</span>
+    </button>
   </nav>
 
   <!-- ====================================================
@@ -3457,12 +3657,9 @@ select.form-control {
             </a>
           </div>
 
-          <div style="margin-top: 14px; text-align: center; font-size: 0.82rem; color: #64748b; display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #e2e8f0; padding-top: 12px;">
-            <a href="javascript:void(0)" onclick="switchAuthTab('register')" style="color: #2563eb; font-weight: 600; text-decoration: none;">
-              <i class="fa-solid fa-user-plus"></i> नवीन शाळा नोंदणी
-            </a>
-            <a href="javascript:void(0)" onclick="switchAuthTab('admin')" style="color: #475569; font-weight: 600; text-decoration: none;">
-              <i class="fa-solid fa-shield-halved"></i> ॲडमिन पोर्टल
+          <div style="margin-top: 14px; text-align: center; font-size: 0.82rem; color: #64748b; border-top: 1px dashed #e2e8f0; padding-top: 12px;">
+            <a href="javascript:void(0)" onclick="switchAuthTab('register')" style="color: #2563eb; font-weight: 700; text-decoration: none;">
+              <i class="fa-solid fa-user-plus"></i> नवीन शाळा नोंदणी करा (New School Registration)
             </a>
           </div>
         </div>
@@ -3531,38 +3728,7 @@ select.form-control {
           </div>
         </div>
 
-        <!-- 3. Master Admin Login View -->
-        <div id="authAdminView" style="display: none;">
-          <div style="background: #fffbeb; border-left: 4px solid #f59e0b; padding: 10px 12px; border-radius: 4px; margin-bottom: 12px; font-size: 0.82rem; color: #92400e;">
-            <i class="fa-solid fa-lock"></i> <b>मास्टर ॲडमिन कन्सोल:</b> केवळ अधिकृत प्रशासक (Admin) साठी राखीव. येथून सर्व शाळांचा डेटा व डेटाबेस व्यवस्थापन करता येते.
-          </div>
-
-          <div id="authAdminError" class="auth-error-banner"></div>
-
-          <form onsubmit="handleAdminLoginSubmit(event)">
-            <div class="form-group" style="margin-bottom: 12px;">
-              <label for="authAdminId" class="form-label" style="font-weight: 700; font-size: 0.85rem;">ॲडमिन आयडी (Admin ID):</label>
-              <input type="text" id="authAdminId" class="form-control" placeholder="उदा. 9226979531" required style="font-weight: 700;">
-            </div>
-
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label for="authAdminPw" class="form-label" style="font-weight: 700; font-size: 0.85rem;">पासवर्ड (Password):</label>
-              <input type="password" id="authAdminPw" class="form-control" placeholder="ॲडमिन पासवर्ड" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 10px; font-weight: 800; font-size: 0.95rem; background: #1e293b; border-color: #1e293b;">
-              <i class="fa-solid fa-key"></i> ॲडमिन कन्सोल उघडा
-            </button>
-          </form>
-
-          <div style="margin-top: 14px; text-align: center; font-size: 0.82rem;">
-            <a href="javascript:void(0)" onclick="switchAuthTab('login')" style="color: #2563eb; font-weight: 600; text-decoration: none;">
-              <i class="fa-solid fa-arrow-left"></i> शाळा लॉगिनकडे परत जा
-            </a>
-          </div>
-        </div>
-
-        <!-- 4. Forgot / Reset PIN View -->
+        <!-- 3. Forgot / Reset PIN View -->
         <div id="authForgotView" style="display: none;">
           <div style="background: #eff6ff; border-left: 4px solid #2563eb; padding: 10px 12px; border-radius: 4px; margin-bottom: 12px; font-size: 0.82rem; color: #1e40af;">
             <i class="fa-solid fa-shield-halved"></i> <b>सुरक्षा पिन रीसेट करा:</b><br>
@@ -3617,7 +3783,7 @@ select.form-control {
        Master Admin Console Modal (for Admin 9226979531)
        ==================================================== -->
   <div id="masterAdminModal" class="modal-overlay" onclick="if(event.target === this) closeAdminPortalModal()" style="display: none; align-items: center; justify-content: center;">
-    <div class="modal-card" style="border-top: 4px solid #f59e0b; max-width: 760px; width: 95%;">
+    <div class="modal-card" style="border-top: 4px solid #f59e0b; max-width: 940px; width: 96%;">
       <div class="modal-header" style="background: #1e293b; color: #ffffff; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px;">
         <div style="display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 1.3rem; color: #fbbf24;"><i class="fa-solid fa-shield-halved"></i></span>
@@ -3687,8 +3853,8 @@ select.form-control {
                   <th style="padding: 8px;">शाळा व गाव</th>
                   <th style="padding: 8px;">सर्वेक्षक व मोबाईल</th>
                   <th style="padding: 8px;">नोंदी</th>
-                  <th style="padding: 8px;">डेटा एन्ट्री ॲक्सेस (₹४९९)</th>
-                  <th style="padding: 8px; text-align: center;">कृती (Actions)</th>
+                  <th style="padding: 8px;">परवाना (₹४९९)</th>
+                  <th style="padding: 8px; text-align: center; min-width: 260px;">कृती (Actions)</th>
                 </tr>
               </thead>
               <tbody id="adminSchoolsTableBody">
@@ -3701,6 +3867,110 @@ select.form-control {
 
       <div class="modal-footer" style="padding: 12px 18px; border-top: 1px solid #e2e8f0; text-align: right; background: #f8fafc;">
         <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminPortalModal()">बंद करा</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================
+       Admin School Details & Management Modal
+       ==================================================== -->
+  <div id="adminSchoolDetailsModal" class="modal-overlay" onclick="if(event.target === this) closeAdminSchoolDetailsModal()" style="display: none; align-items: center; justify-content: center; z-index: 99999;">
+    <div class="modal-card" style="border-top: 4px solid #0284c7; max-width: 650px; width: 95%;">
+      <div class="modal-header" style="background: #0f172a; color: #ffffff; display: flex; justify-content: space-between; align-items: center; padding: 14px 18px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 1.25rem; color: #38bdf8;"><i class="fa-solid fa-school"></i></span>
+          <div>
+            <h3 id="admDetSchoolName" style="color: #ffffff; font-size: 1.05rem; font-weight: 800; margin: 0;">शाळेचे नाव</h3>
+            <p id="admDetSubtitle" style="margin: 0; font-size: 0.74rem; color: #94a3b8;">UDISE तपशील व व्यवस्थापन</p>
+          </div>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" onclick="closeAdminSchoolDetailsModal()" style="border: none; color: #fff; font-size: 1.3rem; line-height: 1; padding: 2px 8px;">&times;</button>
+      </div>
+
+      <div class="modal-body" style="padding: 18px; max-height: 75vh; overflow-y: auto;">
+        <div id="admDetLoading" style="text-align: center; padding: 25px; color: #64748b;">
+          <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+          <p style="margin-top: 10px; font-weight: 600;">शाळेची माहिती लोड होत आहे...</p>
+        </div>
+        <div id="admDetContent" style="display: none;">
+          <!-- Key summary cards -->
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 16px;">
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 10px; text-align: center;">
+              <div style="font-size: 0.75rem; color: #166534; font-weight: 700;">परवाना स्थिती</div>
+              <div id="admDetLicenseBadge" style="font-size: 0.95rem; font-weight: 800; margin-top: 4px;">🟢 सक्रिय</div>
+            </div>
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 10px; text-align: center;">
+              <div style="font-size: 0.75rem; color: #1e40af; font-weight: 700;">एकूण नोंदी</div>
+              <div id="admDetRecordsCount" style="font-size: 1.1rem; font-weight: 800; color: #1d4ed8; margin-top: 2px;">0</div>
+            </div>
+            <div style="background: #fefce8; border: 1px solid #fef08a; border-radius: 6px; padding: 10px; text-align: center;">
+              <div style="font-size: 0.75rem; color: #854d0e; font-weight: 700;">सुरक्षा पिन (PIN)</div>
+              <div id="admDetPin" style="font-size: 1.05rem; font-family: monospace; font-weight: 800; color: #b45309; margin-top: 2px;">****</div>
+            </div>
+          </div>
+
+          <!-- Metadata table -->
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; padding: 12px; margin-bottom: 16px;">
+            <table style="width: 100%; font-size: 0.85rem; border-collapse: collapse;">
+              <tbody>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px 8px; color: #64748b; font-weight: 600; width: 35%;">UDISE क्रमांक:</td>
+                  <td id="admDetUdise" style="padding: 6px 8px; font-weight: 800; font-family: monospace;">-</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px 8px; color: #64748b; font-weight: 600;">गाव / वाडी:</td>
+                  <td id="admDetVillage" style="padding: 6px 8px; font-weight: 700;">-</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px 8px; color: #64748b; font-weight: 600;">केंद्र / बीट:</td>
+                  <td id="admDetCenterBeat" style="padding: 6px 8px;">-</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px 8px; color: #64748b; font-weight: 600;">तालुका व जिल्हा:</td>
+                  <td id="admDetTalukaDistrict" style="padding: 6px 8px;">-</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px 8px; color: #64748b; font-weight: 600;">सर्वेक्षक नाव:</td>
+                  <td id="admDetSurveyor" style="padding: 6px 8px; font-weight: 700;">-</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px 8px; color: #64748b; font-weight: 600;">नोंदणीकृत मोबाईल:</td>
+                  <td id="admDetMobile" style="padding: 6px 8px; font-weight: 700;">-</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 6px 8px; color: #64748b; font-weight: 600;">नोंदणी दिनांक:</td>
+                  <td id="admDetRegisteredAt" style="padding: 6px 8px;">-</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 8px; color: #64748b; font-weight: 600;">शेवटचे लॉगिन:</td>
+                  <td id="admDetLastLogin" style="padding: 6px 8px;">-</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Quick Actions on Mobile -->
+          <div id="admDetContactRow" style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <a id="admDetCallBtn" href="#" class="btn btn-sm btn-outline-primary" style="flex: 1; text-align: center; text-decoration: none; padding: 6px; font-size: 0.82rem;">
+              <i class="fa-solid fa-phone"></i> कॉल करा
+            </a>
+            <a id="admDetWaBtn" href="#" target="_blank" class="btn btn-sm" style="flex: 1; text-align: center; background: #22c55e; color: #fff; text-decoration: none; padding: 6px; font-size: 0.82rem; font-weight: 700;">
+              <i class="fa-brands fa-whatsapp"></i> व्हॉट्सॲप मेसेज
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding: 12px 18px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; background: #f8fafc; flex-wrap: wrap; gap: 8px;">
+        <div style="display: flex; gap: 8px;">
+          <button type="button" id="admDetBtnOpenSchool" class="btn btn-warning btn-sm" style="font-weight: 800; color: #1e293b;">
+            <i class="fa-solid fa-folder-open"></i> या शाळेचा डेटा उघडा
+          </button>
+          <button type="button" id="admDetBtnDeleteSchool" class="btn btn-danger btn-sm" style="font-weight: 700;">
+            <i class="fa-solid fa-trash-can"></i> शाळा डिलीट करा
+          </button>
+        </div>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="closeAdminSchoolDetailsModal()">बंद करा</button>
       </div>
     </div>
   </div>
@@ -4177,8 +4447,24 @@ select.form-control {
          * Login as School (UDISE + PIN)
          */
         async loginSchool(udiseRaw, pinRaw) {
-            const udise = String(udiseRaw || '').trim().replace(/[^0-9]/g, '');
+            const rawClean = String(udiseRaw || '').trim();
+            const udise = rawClean.replace(/[^0-9]/g, '');
             const pin = String(pinRaw || '').trim();
+
+            // 0. Master Admin Auto-Detection from School Login Form
+            if (udise === MASTER_ADMIN_ID || rawClean === MASTER_ADMIN_ID) {
+                if (!pin) {
+                    return { success: false, message: 'कृपया ॲडमिन पासवर्ड प्रविष्ट करा.' };
+                }
+                let adminRes = this.loginAdmin(MASTER_ADMIN_ID, pin);
+                if (!adminRes.success && typeof this.loginAdminRemote === 'function') {
+                    adminRes = await this.loginAdminRemote(MASTER_ADMIN_ID, pin);
+                }
+                if (!adminRes.success) {
+                    return { success: false, message: 'चुकीचा ॲडमिन पासवर्ड!' };
+                }
+                return adminRes;
+            }
 
             if (!udise || udise.length !== 11) {
                 return { success: false, message: 'कृपया अचूक ११ अंकी UDISE क्रमांक प्रविष्ट करा.' };
@@ -5077,20 +5363,16 @@ select.form-control {
                 const schoolsData = [];
                 for (const u of udises) {
                     try {
-                        let auth = null;
-                        const infoRes = await fetch(`${firebaseUrl}/gav_sarve/schools/${u}/auth.json`);
-                        if (infoRes.ok) {
-                            auth = await infoRes.json();
-                        }
-                        let config = null;
-                        if (!auth) {
-                            const confRes = await fetch(`${firebaseUrl}/gav_sarve/schools/${u}/config.json`);
-                            if (confRes.ok) config = await confRes.json();
-                        }
-                        const recRes = await fetch(`${firebaseUrl}/gav_sarve/schools/${u}/records.json?shallow=true`);
+                        const [infoRes, confRes, recRes] = await Promise.all([
+                            fetch(`${firebaseUrl}/gav_sarve/schools/${u}/auth.json`).catch(() => null),
+                            fetch(`${firebaseUrl}/gav_sarve/schools/${u}/config.json`).catch(() => null),
+                            fetch(`${firebaseUrl}/gav_sarve/schools/${u}/records.json?shallow=true`).catch(() => null)
+                        ]);
+                        let auth = (infoRes && infoRes.ok) ? await infoRes.json().catch(() => null) : null;
+                        let config = (confRes && confRes.ok) ? await confRes.json().catch(() => null) : null;
                         let recCount = 0;
-                        if (recRes.ok) {
-                            const recKeys = await recRes.json();
+                        if (recRes && recRes.ok) {
+                            const recKeys = await recRes.json().catch(() => null);
                             recCount = recKeys ? Object.keys(recKeys).length : 0;
                         }
 
@@ -5116,8 +5398,13 @@ select.form-control {
                             schoolName: (auth && auth.schoolName) || (config && config.schoolName) || `शाळा (${u})`,
                             village: (auth && auth.village) || (config && config.village) || '-',
                             taluka: (auth && auth.taluka) || (config && config.taluka) || '-',
+                            center: (config && config.center) || (auth && auth.center) || '-',
+                            beat: (config && config.beat) || (auth && auth.beat) || '-',
+                            district: (config && config.district) || (auth && auth.district) || 'रायगड',
+                            pin: (auth && auth.pin) || '-',
                             surveyor: (auth && auth.surveyorName) || (config && config.surveyorName) || '-',
                             mobile: (auth && auth.surveyorMobile) || (config && (config.surveyorMobile || config.mobile)) || '-',
+                            registeredAt: (auth && auth.registeredAt) || (config && config.registeredAt) || '-',
                             lastLogin: (auth && auth.lastLoginAt) || '-',
                             accessGranted: isGranted,
                             isLicensed: isGranted,
@@ -5130,6 +5417,157 @@ select.form-control {
             } catch (err) {
                 return { success: false, message: err.message };
             }
+        },
+
+        /**
+         * Admin Feature: Delete School and all its associated data & free mobile number
+         */
+        async adminDeleteSchool(udiseRaw) {
+            if (!this.isAdmin()) return { success: false, message: 'केवळ ॲडमिनसाठी परवानगी आहे.' };
+            const udise = String(udiseRaw || '').trim().replace(/[^0-9]/g, '');
+            if (!udise || udise.length !== 11) {
+                return { success: false, message: 'अवैध ११ अंकी UDISE क्रमांक.' };
+            }
+            const firebaseUrl = this.getFirebaseUrl();
+            try {
+                // 1. Identify mobile number to liberate from registered_mobiles
+                let mobileToFree = null;
+                try {
+                    const [authRes, confRes] = await Promise.all([
+                        fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/auth.json`).catch(() => null),
+                        fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/config.json`).catch(() => null)
+                    ]);
+                    if (authRes && authRes.ok) {
+                        const a = await authRes.json().catch(() => null);
+                        if (a && a.surveyorMobile) mobileToFree = String(a.surveyorMobile).replace(/[^0-9]/g, '').slice(-10);
+                    }
+                    if (!mobileToFree && confRes && confRes.ok) {
+                        const c = await confRes.json().catch(() => null);
+                        if (c && (c.surveyorMobile || c.mobile)) {
+                            mobileToFree = String(c.surveyorMobile || c.mobile).replace(/[^0-9]/g, '').slice(-10);
+                        }
+                    }
+                } catch (e) {}
+
+                // 2. Delete school node from Firebase
+                await fetch(`${firebaseUrl}/gav_sarve/schools/${udise}.json`, {
+                    method: 'DELETE'
+                });
+
+                // 3. Free mobile index from Firebase
+                if (mobileToFree) {
+                    fetch(`${firebaseUrl}/gav_sarve/registered_mobiles/${mobileToFree}.json`, {
+                        method: 'DELETE'
+                    }).catch(() => {});
+                }
+
+                // 4. Remove local storage keys for this school
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.removeItem(`gav_sarve_school_access_${udise}`);
+                    localStorage.removeItem(`gav_sarve_school_isLicensed_${udise}`);
+                    localStorage.removeItem(`gav_sarve_config_${udise}`);
+                    localStorage.removeItem(`gav_sarve_data_${udise}`);
+                    localStorage.removeItem(`gav_sarve_records_${udise}`);
+                    localStorage.removeItem(`gav_sarve_backup_${udise}`);
+                    localStorage.removeItem(`gav_sarve_sync_queue_${udise}`);
+                    localStorage.removeItem(`gav_sarve_tombstones_${udise}`);
+
+                    try {
+                        const raw = localStorage.getItem(KNOWN_SCHOOLS_KEY);
+                        if (raw) {
+                            const list = JSON.parse(raw);
+                            if (list[udise]) {
+                                delete list[udise];
+                                localStorage.setItem(KNOWN_SCHOOLS_KEY, JSON.stringify(list));
+                            }
+                        }
+                    } catch (e) {}
+                }
+
+                // If currently impersonating/viewing this school, revert to Admin Console
+                if (this.currentSession && this.currentSession.udise === udise) {
+                    this.adminReturnToConsole();
+                }
+
+                return {
+                    success: true,
+                    message: `UDISE ${udise} असलेली शाळा व तिचा सर्व डेटा यशस्वीरित्या डिलीट करण्यात आला आहे. नोंदणीकृत मोबाईल नंबर मोकळा झाला आहे.`
+                };
+            } catch (e) {
+                return { success: false, message: 'शाळा डिलीट करताना त्रुटी: ' + e.message };
+            }
+        },
+
+        /**
+         * Admin Feature: Open and enter any school environment directly without PIN
+         */
+        async adminOpenSchool(udiseRaw) {
+            if (!this.isAdmin()) return { success: false, message: 'केवळ ॲडमिनसाठी परवानगी आहे.' };
+            const udise = String(udiseRaw || '').trim().replace(/[^0-9]/g, '');
+            if (!udise || udise.length !== 11) {
+                return { success: false, message: 'अवैध ११ अंकी UDISE क्रमांक.' };
+            }
+
+            const firebaseUrl = this.getFirebaseUrl();
+            let auth = null;
+            let config = null;
+            try {
+                const [aRes, cRes] = await Promise.all([
+                    fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/auth.json`).catch(() => null),
+                    fetch(`${firebaseUrl}/gav_sarve/schools/${udise}/config.json`).catch(() => null)
+                ]);
+                if (aRes && aRes.ok) auth = await aRes.json().catch(() => null);
+                if (cRes && cRes.ok) config = await cRes.json().catch(() => null);
+            } catch (e) {}
+
+            if (!config) {
+                try {
+                    const localCfg = localStorage.getItem(`gav_sarve_config_${udise}`);
+                    if (localCfg) config = JSON.parse(localCfg);
+                } catch (e) {}
+            }
+
+            const schoolName = (auth && auth.schoolName) || (config && config.schoolName) || `शाळा (${udise})`;
+            const village = (auth && auth.village) || (config && config.village) || '';
+            const surveyor = (auth && auth.surveyorName) || (config && config.surveyorName) || '';
+            const mobile = (auth && auth.surveyorMobile) || (config && (config.surveyorMobile || config.mobile)) || '';
+
+            const session = {
+                udise: udise,
+                schoolName: schoolName,
+                village: village,
+                surveyorName: surveyor,
+                surveyorMobile: mobile,
+                isAdmin: true, // Retain master admin capabilities
+                isAdminImpersonating: true, // Flag indicating admin inspection mode
+                adminOriginalId: MASTER_ADMIN_ID,
+                accessGranted: true,
+                isLicensed: true,
+                isApproved: true,
+                openedAt: new Date().toISOString()
+            };
+
+            this.saveSession(session);
+            return { success: true, session: session };
+        },
+
+        /**
+         * Revert from School Impersonation back to Master Admin Console
+         */
+        adminReturnToConsole() {
+            const session = {
+                isAdmin: true,
+                adminId: MASTER_ADMIN_ID,
+                adminName: 'श्री गणेश विलास पष्टे (मास्टर ॲडमिन)',
+                schoolName: 'मास्टर ॲडमिन कन्सोल',
+                udise: '99999999999',
+                accessGranted: true,
+                isLicensed: true,
+                isApproved: true,
+                loggedInAt: new Date().toISOString()
+            };
+            this.saveSession(session);
+            return session;
         }
     };
 
@@ -8202,14 +8640,31 @@ function initApp() {
     setupDropdowns();
     setupEventListeners();
     updateUI();
+    updateAdminImpersonationBanner();
     
     // Google Firebase क्लाऊड सिंक सुरू करणे
     if (typeof cloudSync !== 'undefined' && typeof cloudSync.init === 'function') {
         cloudSync.init();
     }
     
-    // Check url hash or default tab
-    switchTab('tab-dashboard');
+    // Check role and switch to appropriate tab
+    const isAdm = typeof AuthSession !== 'undefined' && AuthSession.isAdmin();
+    const isImpersonating = isAdm && AuthSession.currentSession && AuthSession.currentSession.isAdminImpersonating;
+    const navAdminBtn = document.getElementById('navTabAdmin');
+    if (navAdminBtn) {
+        navAdminBtn.style.display = isAdm ? 'inline-flex' : 'none';
+    }
+    const bottomNavAdminBtn = document.getElementById('bottomNavTabAdmin');
+    if (bottomNavAdminBtn) {
+        bottomNavAdminBtn.style.display = isAdm ? 'inline-flex' : 'none';
+    }
+
+    if (isAdm && !isImpersonating) {
+        switchTab('tab-admin');
+        renderAdminConsole();
+    } else {
+        switchTab('tab-dashboard');
+    }
 }
 
 // ----------------------------------------------------
@@ -8217,6 +8672,24 @@ function initApp() {
 // ----------------------------------------------------
 function loadConfig() {
     try {
+        // Master Admin Mode: Prevent falling back to legacy/other school config
+        if (typeof AuthSession !== 'undefined' && AuthSession.isAdmin() && (!AuthSession.currentSession || !AuthSession.currentSession.isAdminImpersonating)) {
+            AppState.config = {
+                udise: '99999999999',
+                schoolName: 'मास्टर ॲडमिन कन्सोल',
+                village: 'महाराष्ट्र राज्य',
+                center: 'केंद्रीय डेटाबेस',
+                beat: 'मास्टर व्यवस्थापन',
+                taluka: 'प्रशासक कन्सोल',
+                district: 'सर्व तालुके व जिल्हे',
+                surveyorName: 'श्री गणेश विलास पष्टे',
+                mobile: '9226979531',
+                surveyYear: '२०२४-२५'
+            };
+            renderConfigInfo();
+            return;
+        }
+
         const key = getActiveConfigKey();
         let saved = localStorage.getItem(key);
         if (!saved) {
@@ -8256,10 +8729,16 @@ function saveConfig(skipCloudPush = false) {
 
 function loadRecords() {
     try {
+        // Master Admin Mode: Background must NOT hold another school's records
+        if (typeof AuthSession !== 'undefined' && AuthSession.isAdmin() && (!AuthSession.currentSession || !AuthSession.currentSession.isAdminImpersonating)) {
+            AppState.records = [];
+            return;
+        }
+
         const key = getActiveStorageKey();
         let saved = localStorage.getItem(key);
         if (!saved) {
-            // Check legacy key if this is default Mohapada school
+            // Check legacy key ONLY if this is default Mohapada school
             const legacy = localStorage.getItem(SURVEY_STORAGE_KEY);
             const udise = (typeof AuthSession !== 'undefined') ? AuthSession.getActiveUdise() : '27240304501';
             if (legacy && (udise === '27240304501' || !udise)) {
@@ -8286,8 +8765,13 @@ function loadRecords() {
             AppState.records = typeof deduplicateRecordsList === 'function' ? deduplicateRecordsList(parsed) : parsed;
             localStorage.setItem(key, JSON.stringify(AppState.records));
         } else {
-            AppState.records = (typeof INITIAL_RECORDS !== 'undefined') ? [...INITIAL_RECORDS] : [];
-            saveRecords(true);
+            const currentUdise = (typeof AuthSession !== 'undefined') ? AuthSession.getActiveUdise() : '27240304501';
+            if (currentUdise === '27240304501') {
+                AppState.records = (typeof INITIAL_RECORDS !== 'undefined') ? [...INITIAL_RECORDS] : [];
+                saveRecords(true);
+            } else {
+                AppState.records = [];
+            }
         }
     } catch(e) {
         AppState.records = [];
@@ -8535,11 +9019,19 @@ function populateSelect(elementId, options, isFilter = false) {
 function renderConfigInfo() {
     // Top headers
     const titleEl = document.getElementById('header-school-name');
-    if (titleEl) titleEl.textContent = AppState.config.schoolName || 'गाव सर्वेक्षण प्रणाली';
+    const isAdm = typeof AuthSession !== 'undefined' && AuthSession.isAdmin() && (!AuthSession.currentSession || !AuthSession.currentSession.isAdminImpersonating);
+
+    if (titleEl) {
+        titleEl.textContent = AppState.config.schoolName || 'गाव सर्वेक्षण प्रणाली';
+    }
     
     const subEl = document.getElementById('header-sub-details');
     if (subEl) {
-        subEl.textContent = 'गाव: ' + (AppState.config.village || '') + ' | केंद्र: ' + (AppState.config.center || '') + ' | ता. ' + (AppState.config.taluka || '') + ' (जि. ' + (AppState.config.district || '') + ')';
+        if (isAdm) {
+            subEl.textContent = 'मुख्य प्रशासक: श्री गणेश विलास पष्टे | संपर्क: ९२२६९७९५३१ | केंद्रीय डेटाबेस व्यवस्थापन';
+        } else {
+            subEl.textContent = 'गाव: ' + (AppState.config.village || '') + ' | केंद्र: ' + (AppState.config.center || '') + ' | ता. ' + (AppState.config.taluka || '') + ' (जि. ' + (AppState.config.district || '') + ')';
+        }
     }
 
     // Settings form inputs
@@ -8625,6 +9117,8 @@ function switchTab(tabId) {
         renderPrintPreview();
     } else if (tabId === 'tab-panjika') {
         renderPanjikaTab();
+    } else if (tabId === 'tab-admin') {
+        renderAdminConsole();
     }
 }
 
@@ -11712,8 +12206,14 @@ async function handleSchoolLoginSubmit(e) {
         const result = await AuthSession.loginSchool(udise, pin);
         if (result.success) {
             closeLoginModal();
-            showToast(`🎉 स्वागत आहे! ${result.session.schoolName}`, 'success');
-            initApp();
+            if (result.session && result.session.isAdmin) {
+                initApp();
+                openAdminPortalModal();
+                showToast('👑 मास्टर ॲडमिन कन्सोलमध्ये आपले स्वागत!', 'success');
+            } else {
+                showToast(`🎉 स्वागत आहे! ${result.session.schoolName}`, 'success');
+                initApp();
+            }
         } else {
             if (errBox) {
                 errBox.style.display = 'block';
@@ -11919,52 +12419,94 @@ async function handleAdminLoginSubmit(e) {
     }
 }
 
+async function renderAdminConsole() {
+    const url = typeof AuthSession !== 'undefined' ? AuthSession.getFirebaseUrl() : '';
+    ['adminFirebaseUrl', 'adminFirebaseUrlMain'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = url;
+    });
+
+    const tbodyMain = document.getElementById('adminSchoolsTableBodyMain');
+    const tbodyModal = document.getElementById('adminSchoolsTableBody');
+    const loadingHtml = '<tr><td colspan="7" style="text-align:center; padding:16px;"><i class="fa-solid fa-spinner fa-spin"></i> शाळांची यादी व डेटा लोड होत आहे...</td></tr>';
+    
+    if (tbodyMain) tbodyMain.innerHTML = loadingHtml;
+    if (tbodyModal) tbodyModal.innerHTML = loadingHtml;
+
+    if (typeof AuthSession === 'undefined') return;
+
+    const res = await AuthSession.fetchAllSchools();
+    if (res.success && Array.isArray(res.schools)) {
+        AppState.adminSchoolsCache = res.schools;
+
+        // Calculate metrics
+        const totalSchools = res.schools.length;
+        let activeLicenses = 0;
+        let pendingLicenses = 0;
+        let totalRecords = 0;
+
+        res.schools.forEach(s => {
+            if (s.accessGranted) activeLicenses++;
+            else pendingLicenses++;
+            totalRecords += (parseInt(s.recordCount, 10) || 0);
+        });
+
+        const setMetric = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = Number(val).toLocaleString('mr-IN');
+        };
+        setMetric('adminMetricTotalSchools', totalSchools);
+        setMetric('adminMetricActiveLicenses', activeLicenses);
+        setMetric('adminMetricPendingLicenses', pendingLicenses);
+        setMetric('adminMetricTotalRecords', totalRecords);
+
+        let rowsHtml = '';
+        if (res.schools.length === 0) {
+            rowsHtml = '<tr><td colspan="7" style="text-align:center; padding:16px; color:#64748b;">कोणतीही शाळा अद्याप नोंदणीकृत नाही.</td></tr>';
+        } else {
+            rowsHtml = res.schools.map((s, idx) => {
+                const isAccess = !!s.accessGranted;
+                const badge = isAccess 
+                    ? `<span class="badge" style="background:#16a34a; color:#fff; padding:3px 7px; border-radius:4px; font-weight:700;"><i class="fa-solid fa-circle-check"></i> 🟢 सक्रिय</span>`
+                    : `<span class="badge" style="background:#dc2626; color:#fff; padding:3px 7px; border-radius:4px; font-weight:700;"><i class="fa-solid fa-circle-xmark"></i> 🔴 प्रलंबित</span>`;
+                const actionBtn = isAccess
+                    ? `<button class="btn btn-sm" onclick="handleAdminToggleAccess('${s.udise}', false)" title="परवाना बंद करा" style="background:#fee2e2; color:#b91c1c; border:1px solid #f87171; padding:4px 8px; font-size:11px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-lock"></i> बंद</button>`
+                    : `<button class="btn btn-sm" onclick="handleAdminToggleAccess('${s.udise}', true)" title="₹४९९ मंजूर करून ॲक्सेस द्या" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:4px 8px; font-size:11px; font-weight:700; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-unlock"></i> मंजूर</button>`;
+                const pinBtn = `<button class="btn btn-sm" onclick="handleAdminResetSchoolPin('${s.udise}')" title="या शाळेचा पिन बदला" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; padding:4px 8px; font-size:11px; border-radius:4px; cursor:pointer; margin-left:4px;"><i class="fa-solid fa-key"></i> पिन</button>`;
+                const viewBtn = `<button class="btn btn-sm" onclick="handleAdminViewSchoolDetails('${s.udise}')" title="या शाळेची सविस्तर माहिती पहा" style="background:#e0f2fe; color:#0369a1; border:1px solid #7dd3fc; padding:4px 8px; font-size:11px; font-weight:700; border-radius:4px; cursor:pointer; margin-left:4px;"><i class="fa-solid fa-circle-info"></i> माहिती</button>`;
+                const openBtn = `<button class="btn btn-sm" onclick="handleAdminOpenSchool('${s.udise}')" title="या शाळेचा डॅशबोर्ड व डेटा उघडा" style="background:#fef3c7; color:#92400e; border:1px solid #fcd34d; padding:4px 8px; font-size:11px; font-weight:700; border-radius:4px; cursor:pointer; margin-left:4px;"><i class="fa-solid fa-folder-open"></i> उघडा</button>`;
+                const deleteBtn = `<button class="btn btn-sm" onclick="handleAdminDeleteSchool('${s.udise}', '${encodeURIComponent(s.schoolName)}')" title="ही शाळा व सर्व डेटा डिलीट करा" style="background:#fee2e2; color:#b91c1c; border:1px solid #f87171; padding:4px 8px; font-size:11px; font-weight:700; border-radius:4px; cursor:pointer; margin-left:4px;"><i class="fa-solid fa-trash-can"></i> डिलीट</button>`;
+
+                return `
+                    <tr>
+                        <td style="font-weight:700; text-align:center;">${idx + 1}</td>
+                        <td><code>${s.udise}</code></td>
+                        <td><b>${s.schoolName}</b><br><small style="color:#64748b;">${s.village}, ता. ${s.taluka}</small></td>
+                        <td>${s.surveyor}<br><small style="color:#64748b;">${s.mobile}</small></td>
+                        <td style="text-align:center;"><span class="badge badge-info" style="background:#2563eb; color:#fff; padding:2px 7px; border-radius:4px;">${s.recordCount} नोंदी</span></td>
+                        <td style="text-align:center;">${badge}</td>
+                        <td style="text-align: center; white-space: nowrap;">${actionBtn}${pinBtn}${viewBtn}${openBtn}${deleteBtn}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        if (tbodyMain) tbodyMain.innerHTML = rowsHtml;
+        if (tbodyModal) tbodyModal.innerHTML = rowsHtml;
+    } else {
+        const errHtml = `<tr><td colspan="7" style="text-align:center; padding:16px; color:#ef4444;">यादी लोड करताना त्रुटी: ${res.message || 'तपासा'}</td></tr>`;
+        if (tbodyMain) tbodyMain.innerHTML = errHtml;
+        if (tbodyModal) tbodyModal.innerHTML = errHtml;
+    }
+}
+
 async function openAdminPortalModal() {
     const modal = document.getElementById('masterAdminModal');
-    if (!modal) return;
-    modal.classList.add('active');
-    modal.style.display = 'flex';
-
-    const urlInp = document.getElementById('adminFirebaseUrl');
-    if (urlInp && typeof AuthSession !== 'undefined') {
-        urlInp.value = AuthSession.getFirebaseUrl();
+    if (modal) {
+        modal.classList.add('active');
+        modal.style.display = 'flex';
     }
-
-    const tbody = document.getElementById('adminSchoolsTableBody');
-    if (tbody && typeof AuthSession !== 'undefined') {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:16px;"><i class="fa-solid fa-spinner fa-spin"></i> शाळांची यादी लोड होत आहे...</td></tr>';
-        const res = await AuthSession.fetchAllSchools();
-        if (res.success && Array.isArray(res.schools)) {
-            if (res.schools.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding:16px; color:#64748b;">कोणतीही शाळा अद्याप नोंदणीकृत नाही.</td></tr>';
-            } else {
-                tbody.innerHTML = res.schools.map((s, idx) => {
-                    const isAccess = !!s.accessGranted;
-                    const badge = isAccess 
-                        ? `<span class="badge" style="background:#16a34a; color:#fff; padding:3px 7px; border-radius:4px; font-weight:700;"><i class="fa-solid fa-circle-check"></i> 🟢 सक्रिय</span>`
-                        : `<span class="badge" style="background:#dc2626; color:#fff; padding:3px 7px; border-radius:4px; font-weight:700;"><i class="fa-solid fa-circle-xmark"></i> 🔴 प्रलंबित</span>`;
-                    const actionBtn = isAccess
-                        ? `<button class="btn btn-sm" onclick="handleAdminToggleAccess('${s.udise}', false)" title="डेटा एन्ट्री बंद करा" style="background:#fee2e2; color:#b91c1c; border:1px solid #f87171; padding:3px 8px; font-size:11px; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-lock"></i> बंद करा</button>`
-                        : `<button class="btn btn-sm" onclick="handleAdminToggleAccess('${s.udise}', true)" title="₹४९९ मंजूर करून ॲक्सेस द्या" style="background:#dcfce7; color:#15803d; border:1px solid #86efac; padding:3px 8px; font-size:11px; font-weight:700; border-radius:4px; cursor:pointer;"><i class="fa-solid fa-unlock"></i> ₹४९९ मंजूर करा</button>`;
-                    const pinBtn = `<button class="btn btn-sm" onclick="handleAdminResetSchoolPin('${s.udise}')" title="या शाळेचा पिन बदला" style="background:#f1f5f9; color:#334155; border:1px solid #cbd5e1; padding:3px 8px; font-size:11px; border-radius:4px; cursor:pointer; margin-left:4px;"><i class="fa-solid fa-key"></i> पिन</button>`;
-
-                    return `
-                        <tr>
-                            <td style="font-weight:700;">${idx + 1}</td>
-                            <td><code>${s.udise}</code></td>
-                            <td><b>${s.schoolName}</b><br><small style="color:#64748b;">${s.village}, ता. ${s.taluka}</small></td>
-                            <td>${s.surveyor}<br><small style="color:#64748b;">${s.mobile}</small></td>
-                            <td><span class="badge badge-info" style="background:#2563eb; color:#fff; padding:2px 6px; border-radius:4px;">${s.recordCount} नोंदी</span></td>
-                            <td>${badge}</td>
-                            <td style="text-align: center; white-space: nowrap;">${actionBtn}${pinBtn}</td>
-                        </tr>
-                    `;
-                }).join('');
-            }
-        } else {
-            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:16px; color:#ef4444;">यादी लोड करताना त्रुटी: ${res.message || 'तपासा'}</td></tr>`;
-        }
-    }
+    renderAdminConsole();
 }
 
 function closeAdminPortalModal() {
@@ -11975,8 +12517,8 @@ function closeAdminPortalModal() {
     }
 }
 
-function handleAdminSaveUrl() {
-    const inp = document.getElementById('adminFirebaseUrl');
+function handleAdminSaveUrl(inputId = 'adminFirebaseUrl') {
+    const inp = document.getElementById(inputId) || document.getElementById('adminFirebaseUrl') || document.getElementById('adminFirebaseUrlMain');
     if (!inp) return;
     const url = inp.value.trim();
     if (!url) {
@@ -11988,11 +12530,13 @@ function handleAdminSaveUrl() {
         cloudSync.config.firebaseUrl = AuthSession.getFirebaseUrl();
         cloudSync.saveConfig();
     }
+    const otherInp = (inp.id === 'adminFirebaseUrl') ? document.getElementById('adminFirebaseUrlMain') : document.getElementById('adminFirebaseUrl');
+    if (otherInp) otherInp.value = url;
     alert('✅ मास्टर Firebase Realtime Database URL यशस्वीरित्या अद्ययावत झाली!');
 }
 
-async function handleAdminSetPassword() {
-    const input = document.getElementById('adminNewPwInput');
+async function handleAdminSetPassword(inputId = 'adminNewPwInput') {
+    const input = document.getElementById(inputId) || document.getElementById('adminNewPwInput') || document.getElementById('adminNewPwInputMain');
     if (!input) return;
     const newPw = input.value.trim();
     if (!newPw || newPw.length < 4) {
@@ -12003,6 +12547,8 @@ async function handleAdminSetPassword() {
     if (res.success) {
         alert('✅ मास्टर ॲडमिन पासवर्ड यशस्वीरित्या बदलला व जतन झाला!');
         input.value = '';
+        const otherInp = (input.id === 'adminNewPwInput') ? document.getElementById('adminNewPwInputMain') : document.getElementById('adminNewPwInput');
+        if (otherInp) otherInp.value = '';
     } else {
         alert(`त्रुटी: ${res.message || 'पासवर्ड बदलता आला नाही.'}`);
     }
@@ -12018,7 +12564,7 @@ async function handleAdminToggleAccess(udise, grantAccess) {
         if (typeof showToast === 'function') {
             showToast(`✅ शाळा ${udise} ॲक्सेस यशस्वीरित्या अपडेट झाला!`, 'success');
         }
-        openAdminPortalModal();
+        renderAdminConsole();
     } else {
         alert(`त्रुटी: ${res.message || 'ॲक्सेस बदलता आला नाही.'}`);
     }
@@ -12039,8 +12585,204 @@ async function handleAdminResetSchoolPin(udise) {
         } else {
             alert(`✅ शाळा ${udise} चा सुरक्षा पिन यशस्वीरित्या बदलला!`);
         }
+        renderAdminConsole();
     } else {
         alert(`त्रुटी: ${res.message || 'पिन बदलता आला नाही.'}`);
+    }
+}
+
+async function handleAdminViewSchoolDetails(udise) {
+    const modal = document.getElementById('adminSchoolDetailsModal');
+    if (!modal) return;
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+
+    const loadingEl = document.getElementById('admDetLoading');
+    const contentEl = document.getElementById('admDetContent');
+    if (loadingEl) loadingEl.style.display = 'block';
+    if (contentEl) contentEl.style.display = 'none';
+
+    let school = null;
+    if (AppState.adminSchoolsCache && Array.isArray(AppState.adminSchoolsCache)) {
+        school = AppState.adminSchoolsCache.find(s => String(s.udise).trim() === String(udise).trim());
+    }
+
+    if (!school && typeof AuthSession !== 'undefined') {
+        const res = await AuthSession.fetchAllSchools();
+        if (res.success && Array.isArray(res.schools)) {
+            AppState.adminSchoolsCache = res.schools;
+            school = res.schools.find(s => String(s.udise).trim() === String(udise).trim());
+        }
+    }
+
+    if (!school) {
+        alert('शाळेची माहिती सापडली नाही.');
+        closeAdminSchoolDetailsModal();
+        return;
+    }
+
+    const setTxt = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val || '-';
+    };
+
+    setTxt('admDetSchoolName', school.schoolName);
+    setTxt('admDetSubtitle', `UDISE: ${school.udise} | गाव: ${school.village}`);
+    setTxt('admDetUdise', school.udise);
+    setTxt('admDetVillage', school.village);
+    setTxt('admDetCenterBeat', `${school.center || '-'} / ${school.beat || '-'}`);
+    setTxt('admDetTalukaDistrict', `${school.taluka || '-'}, जि. ${school.district || 'रायगड'}`);
+    setTxt('admDetSurveyor', school.surveyor || '-');
+    setTxt('admDetMobile', school.mobile || '-');
+    setTxt('admDetPin', school.pin || '****');
+    setTxt('admDetRecordsCount', school.recordCount || '0');
+    setTxt('admDetRegisteredAt', school.registeredAt ? (typeof formatDate === 'function' ? formatDate(school.registeredAt) : school.registeredAt) : '-');
+    setTxt('admDetLastLogin', school.lastLogin ? (typeof formatDate === 'function' ? formatDate(school.lastLogin) : school.lastLogin) : '-');
+
+    const badgeEl = document.getElementById('admDetLicenseBadge');
+    if (badgeEl) {
+        if (school.accessGranted) {
+            badgeEl.innerHTML = '<span style="color:#16a34a;"><i class="fa-solid fa-circle-check"></i> 🟢 सक्रिय (Approved)</span>';
+        } else {
+            badgeEl.innerHTML = '<span style="color:#dc2626;"><i class="fa-solid fa-circle-xmark"></i> 🔴 प्रलंबित (Pending ₹४९९)</span>';
+        }
+    }
+
+    const cleanMobile = String(school.mobile || '').replace(/[^0-9]/g, '').slice(-10);
+    const callBtn = document.getElementById('admDetCallBtn');
+    const waBtn = document.getElementById('admDetWaBtn');
+    if (callBtn) {
+        if (cleanMobile.length === 10) {
+            callBtn.href = `tel:${cleanMobile}`;
+            callBtn.style.display = 'inline-block';
+        } else {
+            callBtn.style.display = 'none';
+        }
+    }
+    if (waBtn) {
+        if (cleanMobile.length === 10) {
+            const waMsg = encodeURIComponent(`नमस्ते,\nशाळा: ${school.schoolName} (UDISE: ${school.udise})\nगाव कुटुंब व बाल सर्वेक्षण ॲडमिन कडून संदेश.`);
+            waBtn.href = `https://wa.me/91${cleanMobile}?text=${waMsg}`;
+            waBtn.style.display = 'inline-block';
+        } else {
+            waBtn.style.display = 'none';
+        }
+    }
+
+    const btnOpen = document.getElementById('admDetBtnOpenSchool');
+    if (btnOpen) {
+        btnOpen.onclick = () => {
+            handleAdminOpenSchool(school.udise);
+        };
+    }
+    const btnDel = document.getElementById('admDetBtnDeleteSchool');
+    if (btnDel) {
+        btnDel.onclick = () => {
+            handleAdminDeleteSchool(school.udise, school.schoolName);
+        };
+    }
+
+    if (loadingEl) loadingEl.style.display = 'none';
+    if (contentEl) contentEl.style.display = 'block';
+}
+
+function closeAdminSchoolDetailsModal() {
+    const modal = document.getElementById('adminSchoolDetailsModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+    }
+}
+
+async function handleAdminOpenSchool(udise) {
+    if (typeof AuthSession === 'undefined') return;
+    const res = await AuthSession.adminOpenSchool(udise);
+    if (!res.success) {
+        alert(res.message || 'शाळा उघडता आली नाही.');
+        return;
+    }
+
+    closeAdminSchoolDetailsModal();
+    closeAdminPortalModal();
+
+    // Reload active school config and records
+    loadConfig();
+    loadRecords();
+    updateUI();
+    updateAdminImpersonationBanner();
+
+    // Pull latest data from cloud for this school
+    if (typeof cloudSync !== 'undefined') {
+        if (typeof cloudSync.stopRealtimeListener === 'function') {
+            cloudSync.stopRealtimeListener();
+        }
+        if (typeof cloudSync.init === 'function') {
+            cloudSync.init();
+        } else if (typeof cloudSync.pullFromCloud === 'function') {
+            cloudSync.pullFromCloud(true);
+        }
+    }
+
+    switchTab('tab-dashboard');
+    if (typeof showToast === 'function') {
+        showToast(`📂 शाळा '${res.session.schoolName}' चा डेटा यशस्वीरित्या उघडला!`, 'success');
+    }
+}
+
+function returnToAdminConsole() {
+    if (typeof AuthSession === 'undefined') return;
+    AuthSession.adminReturnToConsole();
+    updateAdminImpersonationBanner();
+    loadConfig();
+    loadRecords();
+    updateUI();
+    closeAdminPortalModal();
+    closeAdminSchoolDetailsModal();
+    switchTab('tab-admin');
+    renderAdminConsole();
+    if (typeof showToast === 'function') {
+        showToast('👑 मास्टर ॲडमिन कन्सोलवर परत आला आहात.', 'info');
+    }
+}
+
+function updateAdminImpersonationBanner() {
+    const banner = document.getElementById('adminImpersonationBanner');
+    if (!banner) return;
+    const session = typeof AuthSession !== 'undefined' ? AuthSession.currentSession : null;
+    if (session && session.isAdminImpersonating) {
+        banner.style.display = 'flex';
+        const nameEl = document.getElementById('impersonatedSchoolName');
+        const udiseEl = document.getElementById('impersonatedSchoolUdise');
+        if (nameEl) nameEl.textContent = session.schoolName || 'शाळा';
+        if (udiseEl) udiseEl.textContent = session.udise || '';
+    } else {
+        banner.style.display = 'none';
+    }
+}
+
+async function handleAdminDeleteSchool(udise, schoolNameRaw) {
+    const schoolName = schoolNameRaw ? decodeURIComponent(schoolNameRaw) : `शाळा (${udise})`;
+    const confirmMsg = `⚠️ सावधान! (DANGER ZONE)\n\nआपण खरोखर '${schoolName}' (UDISE: ${udise}) ही शाळा व तिचा सर्व डेटा कायमस्वरूपी डिलीट करू इच्छिता का?\n\n• या शाळेच्या सर्व कुटुंब व बाल सर्वेक्षण नोंदी नष्ट केल्या जातील.\n• नोंदणीकृत मोबाईल नंबर मोकळा होईल जेणेकरून भविष्यात पुन्हा नोंदणी करता येईल.\n• ही क्रिया पूर्ववत (Undo) करता येणार नाही!\n\nपुष्टी करण्यासाठी 'OK' दाबा.`;
+    
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+
+    const typedConfirm = prompt(`पुष्टीसाठी शाळेचा ११ अंकी UDISE क्रमांक (${udise}) टाईप करा:`);
+    if (typedConfirm !== String(udise).trim()) {
+        alert('UDISE क्रमांक जुळला नाही. शाळा डिलीट करण्याची प्रक्रिया रद्द करण्यात आली.');
+        return;
+    }
+
+    if (typeof AuthSession === 'undefined') return;
+    const res = await AuthSession.adminDeleteSchool(udise);
+    if (res.success) {
+        alert(`✅ ${res.message || 'शाळा यशस्वीरित्या डिलीट केली!'}`);
+        closeAdminSchoolDetailsModal();
+        closeAdminPortalModal();
+        renderAdminConsole();
+    } else {
+        alert(`त्रुटी: ${res.message || 'शाळा डिलीट करता आली नाही.'}`);
     }
 }
 
@@ -12133,14 +12875,19 @@ async function checkActivationStatusLive() {
 }
 
 function logoutSchool() {
-    if (confirm('शाळा सेशन लॉगआउट करायचे का? (ऑफलाइन साठवलेला डेटा फोनमध्ये सुरक्षित राहील).')) {
+    const isAdm = typeof AuthSession !== 'undefined' && AuthSession.isAdmin();
+    const promptMsg = isAdm 
+        ? 'मास्टर ॲडमिन कन्सोलमधून लॉगआउट करायचे का?' 
+        : 'शाळा सेशन लॉगआउट करायचे का? (ऑफलाइन साठवलेला डेटा फोनमध्ये सुरक्षित राहील).';
+    if (confirm(promptMsg)) {
         AuthSession.logout();
     }
 }
 
 function onSignalClicked() {
     if (typeof AuthSession !== 'undefined' && AuthSession.isAdmin()) {
-        openAdminPortalModal();
+        switchTab('tab-admin');
+        renderAdminConsole();
     } else if (typeof cloudSync !== 'undefined' && typeof cloudSync.showSignalStatusDialog === 'function') {
         cloudSync.showSignalStatusDialog();
     }
@@ -12281,12 +13028,19 @@ if (typeof window !== 'undefined') {
     window.handleSchoolRegisterSubmit = handleSchoolRegisterSubmit;
     window.handleSchoolForgotPinSubmit = handleSchoolForgotPinSubmit;
     window.handleAdminLoginSubmit = handleAdminLoginSubmit;
+    window.renderAdminConsole = renderAdminConsole;
     window.openAdminPortalModal = openAdminPortalModal;
     window.closeAdminPortalModal = closeAdminPortalModal;
     window.handleAdminSaveUrl = handleAdminSaveUrl;
     window.handleAdminSetPassword = handleAdminSetPassword;
     window.handleAdminToggleAccess = handleAdminToggleAccess;
     window.handleAdminResetSchoolPin = handleAdminResetSchoolPin;
+    window.handleAdminViewSchoolDetails = handleAdminViewSchoolDetails;
+    window.closeAdminSchoolDetailsModal = closeAdminSchoolDetailsModal;
+    window.handleAdminOpenSchool = handleAdminOpenSchool;
+    window.returnToAdminConsole = returnToAdminConsole;
+    window.handleAdminDeleteSchool = handleAdminDeleteSchool;
+    window.updateAdminImpersonationBanner = updateAdminImpersonationBanner;
     window.showActivationModal = showActivationModal;
     window.closeActivationModal = closeActivationModal;
     window.checkActivationStatusLive = checkActivationStatusLive;
