@@ -5827,6 +5827,50 @@ const cloudSync = {
     this.scheduleDebouncedPush();
   },
 
+  recordFamilyDeletion(familyId, members = []) {
+    if (!familyId) return;
+    const currentUdise = this.getSchoolUdise();
+    const tombstones = this.getTombstones(currentUdise);
+    const nowTs = Date.now();
+    const nowIso = new Date().toISOString();
+    const famKey = 'fam_' + String(familyId).trim().toUpperCase();
+
+    tombstones[famKey] = {
+      id: famKey,
+      familyId: familyId,
+      isFamily: true,
+      deleted_ts: nowTs,
+      deleted_at: nowIso
+    };
+
+    members.forEach(m => {
+      const idStr = String(m.id);
+      const mTs = nowTs;
+      tombstones[idStr] = {
+        id: m.id,
+        familyId: m.familyId || familyId,
+        fullName: m.fullName || '',
+        aadhaar: m.aadhaar || '',
+        deleted_ts: mTs,
+        deleted_at: nowIso
+      };
+      this.enqueueMutation('DELETE', tombstones[idStr]);
+    });
+
+    this.saveTombstones(tombstones, currentUdise);
+
+    if (navigator.onLine && this.config.firebaseUrl) {
+      const cleanBaseUrl = this.normalizeFirebaseUrl(this.config.firebaseUrl);
+      fetch(`${cleanBaseUrl}/gav_sarve/schools/${currentUdise}/tombstones/${famKey}.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tombstones[famKey])
+      }).catch(err => console.warn("Could not push family tombstone immediately:", err));
+    }
+
+    this.scheduleDebouncedPush();
+  },
+
   async fetchRemoteTombstones() {
     const currentUdise = this.getSchoolUdise();
     const localTombstones = this.getTombstones(currentUdise);
@@ -5855,17 +5899,42 @@ const cloudSync = {
     return localTombstones;
   },
 
+  async pushLocalTombstonesToFirebase() {
+    const currentUdise = this.getSchoolUdise();
+    if (!navigator.onLine || !this.config.firebaseUrl) return false;
+    const tombstones = this.getTombstones(currentUdise);
+    if (!tombstones || Object.keys(tombstones).length === 0) return true;
+
+    const cleanBaseUrl = this.normalizeFirebaseUrl(this.config.firebaseUrl);
+    try {
+      const res = await this.fetchWithTimeout(`${cleanBaseUrl}/gav_sarve/schools/${currentUdise}/tombstones.json`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tombstones)
+      }, 10000);
+      return res.ok;
+    } catch (e) {
+      console.warn("Could not push tombstones to Firebase:", e);
+      return false;
+    }
+  },
+
   // ====================================================
   // Timestamp & Version Normalization
   // ====================================================
   normalizeRecord(rec) {
     if (!rec || typeof rec !== 'object') return rec;
     rec.version = Math.max(1, Number(rec.version) || 1);
-    rec.created_at = rec.created_at || rec.createdAt || new Date().toISOString();
+    const idTs = (typeof rec.id === 'number' && rec.id > 1000000000000) ? rec.id : 0;
+    const initialIso = idTs ? new Date(idTs).toISOString() : new Date().toISOString();
+    rec.created_at = rec.created_at || rec.createdAt || initialIso;
     rec.createdAt = rec.created_at;
     rec.updated_at = rec.updated_at || rec.updatedAt || rec.created_at;
     rec.updatedAt = rec.updated_at;
-    rec.updated_ts = Number(rec.updated_ts) || (rec.updated_at ? new Date(rec.updated_at).getTime() : Date.now()) || Date.now();
+    const parsedUpdated = rec.updated_at ? new Date(rec.updated_at).getTime() : 0;
+    const parsedCreated = rec.created_at ? new Date(rec.created_at).getTime() : 0;
+    const fallbackTs = !isNaN(parsedUpdated) && parsedUpdated > 0 ? parsedUpdated : (!isNaN(parsedCreated) && parsedCreated > 0 ? parsedCreated : (idTs || 0));
+    rec.updated_ts = Number(rec.updated_ts) || fallbackTs;
     return rec;
   },
 
@@ -5920,8 +5989,9 @@ const cloudSync = {
       const queue = this.getSyncQueue();
       if (!queue || queue.length === 0) return true;
 
-      // First sync tombstones to ensure deletions are known
+      // First sync tombstones to ensure deletions are known locally and remotely
       await this.fetchRemoteTombstones();
+      await this.pushLocalTombstonesToFirebase();
 
       // Trigger server-validated push
       const success = await this.pushToCloud(true);
@@ -5942,15 +6012,23 @@ const cloudSync = {
   // Server-Side Validation & Optimistic Locking
   // ====================================================
   validateAndMergeWithServer(localRecords, remoteRecords, tombstonesMap = null) {
-    if (!tombstonesMap) tombstonesMap = this.getTombstones();
+    if (!tombstonesMap) tombstonesMap = this.getTombstones(this.getSchoolUdise());
 
     const isTombstoned = (rec) => {
       if (!rec) return true;
       const idKey = String(rec.id);
       const tomb = tombstonesMap[idKey];
-      const recUpdated = Number(rec.updated_ts) || (rec.updated_at ? new Date(rec.updated_at).getTime() : 0);
+      const recUpdated = Number(rec.updated_ts) || (rec.updated_at ? new Date(rec.updated_at).getTime() : (Number(rec.id) || 0));
       if (tomb && (tomb.deleted_ts || 0) >= recUpdated) {
         return true;
+      }
+
+      // Family-level Tombstone (for entire deleted families)
+      if (rec.familyId) {
+        const famTomb = tombstonesMap['fam_' + String(rec.familyId).trim().toUpperCase()];
+        if (famTomb && (famTomb.deleted_ts || 0) >= recUpdated) {
+          return true;
+        }
       }
 
       // Match by Aadhaar if available
@@ -6192,6 +6270,16 @@ const cloudSync = {
         }))
       }).catch(() => {});
 
+      // 3. Push Tombstones to Firebase (Ensures deletions persist across all devices & cloud)
+      const allLocalTombstones = this.getTombstones(currentUdise);
+      if (allLocalTombstones && Object.keys(allLocalTombstones).length > 0) {
+        fetch(`${cleanBaseUrl}/gav_sarve/schools/${currentUdise}/tombstones.json`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(allLocalTombstones)
+        }).catch(err => console.warn("Could not push tombstones:", err));
+      }
+
       if (res.ok) {
         this.config.status = 'synced';
         this.config.lastSyncTime = new Date().toISOString();
@@ -6393,7 +6481,8 @@ const cloudSync = {
 
     if (!incoming || incoming.length === 0) return;
 
-    const tombstones = this.getTombstones();
+    const currentUdise = this.getSchoolUdise();
+    const tombstones = this.getTombstones(currentUdise);
     const local = (typeof AppState !== 'undefined' && Array.isArray(AppState.records)) ? AppState.records : [];
     const merged = this.validateAndMergeWithServer(local, incoming, tombstones);
 
@@ -8765,11 +8854,15 @@ function loadRecords() {
                 }
                 // 2. Filter out any tombstoned (deleted) records
                 if (typeof cloudSync !== 'undefined' && typeof cloudSync.getTombstones === 'function') {
-                    const tombstones = cloudSync.getTombstones();
+                    const currentUdise = (typeof AuthSession !== 'undefined') ? AuthSession.getActiveUdise() : '27240304501';
+                    const tombstones = cloudSync.getTombstones(currentUdise);
                     parsed = parsed.filter(r => {
                         const t = tombstones[String(r.id)];
-                        const recUpdated = Number(r.updated_ts) || (r.updated_at ? new Date(r.updated_at).getTime() : 0);
-                        return !(t && (t.deleted_ts || 0) >= recUpdated);
+                        const famT = r.familyId ? tombstones['fam_' + String(r.familyId).trim().toUpperCase()] : null;
+                        const recUpdated = Number(r.updated_ts) || (r.updated_at ? new Date(r.updated_at).getTime() : (Number(r.id) || 0));
+                        if (t && (t.deleted_ts || 0) >= recUpdated) return false;
+                        if (famT && (famT.deleted_ts || 0) >= recUpdated) return false;
+                        return true;
                     });
                 }
             }
@@ -8818,7 +8911,8 @@ function saveRecords(skipCloudPush = false) {
 function smartMergeRecords(existingList, incomingList, tombstones = null) {
     if (!Array.isArray(incomingList)) return { merged: existingList, added: 0, updated: 0 };
     if (!tombstones && typeof cloudSync !== 'undefined' && typeof cloudSync.getTombstones === 'function') {
-        tombstones = cloudSync.getTombstones();
+        const currentUdise = (typeof AuthSession !== 'undefined') ? AuthSession.getActiveUdise() : '27240304501';
+        tombstones = cloudSync.getTombstones(currentUdise);
     }
     if (!tombstones) tombstones = {};
 
@@ -8826,8 +8920,13 @@ function smartMergeRecords(existingList, incomingList, tombstones = null) {
         if (!rec) return true;
         const idKey = String(rec.id);
         const t = tombstones[idKey];
-        const recUpdated = Number(rec.updated_ts) || (rec.updated_at ? new Date(rec.updated_at).getTime() : 0);
+        const recUpdated = Number(rec.updated_ts) || (rec.updated_at ? new Date(rec.updated_at).getTime() : (Number(rec.id) || 0));
         if (t && (t.deleted_ts || 0) >= recUpdated) return true;
+
+        if (rec.familyId) {
+            const famT = tombstones['fam_' + String(rec.familyId).trim().toUpperCase()];
+            if (famT && (famT.deleted_ts || 0) >= recUpdated) return true;
+        }
 
         if (rec.aadhaar && rec.aadhaar !== '-') {
             const cleanAadhaar = String(rec.aadhaar).replace(/\D/g, '');
@@ -9765,6 +9864,9 @@ function renderCardsView(records, container) {
                         <button class="action-icon-btn" title="या कुटुंबात सदस्य जोडा" onclick="addMemberToFamily('${famId}')">
                             <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i>
                         </button>
+                        <button class="action-icon-btn delete-btn" title="संपूर्ण कुटुंब हटवा" onclick="deleteFamily('${famId}')" style="background: #fee2e2; border-color: #fca5a5;">
+                            <i class="fa-solid fa-trash-can" style="color: #dc2626;"></i>
+                        </button>
                     </div>
                 </div>
                 <div class="family-members-list">
@@ -9956,6 +10058,33 @@ function deleteMember(id) {
         showToast('नोंद यशस्वीरित्या हटवली!', 'warning');
         updateUI();
     }
+}
+
+function deleteFamily(familyId) {
+    if (!familyId) return;
+    const members = AppState.records.filter(r => r.familyId === familyId);
+    if (members.length === 0) return;
+
+    const head = members.find(m => m.isHead === 'होय') || members[0];
+    const headName = head ? head.fullName : familyId;
+
+    const confirmMsg = `⚠️ खात्री करा: कुटुंब क्रमांक "${familyId}" (${headName}) मधील सर्व ${members.length} सदस्यांची नोंद कायमची काढून टाकायची आहे का?\n\nहा डेटा क्लाऊडवरून व सर्व उपकरणांवरून कायमचा नष्ट होईल.`;
+    if (!confirm(confirmMsg)) {
+        return;
+    }
+
+    // 1. Record family-level and member-level tombstones for cloud sync
+    if (typeof cloudSync !== 'undefined' && typeof cloudSync.recordFamilyDeletion === 'function') {
+        cloudSync.recordFamilyDeletion(familyId, members);
+    } else if (typeof cloudSync !== 'undefined' && typeof cloudSync.recordDeletion === 'function') {
+        members.forEach(m => cloudSync.recordDeletion(m.id, m));
+    }
+
+    // 2. Remove all members of this family from AppState
+    AppState.records = AppState.records.filter(r => r.familyId !== familyId);
+    saveRecords();
+    showToast(`कुटुंब ${familyId} मधील सर्व ${members.length} सदस्य कायमचे हटवले!`, 'warning');
+    updateUI();
 }
 
 // ----------------------------------------------------
@@ -13166,6 +13295,8 @@ if (typeof window !== 'undefined') {
     window.handleFormSave = handleFormSave;
     window.getNextFamilyId = getNextFamilyId;
     window.updateFamilyIdSuggestion = updateFamilyIdSuggestion;
+    window.deleteMember = deleteMember;
+    window.deleteFamily = deleteFamily;
 }
 
 
