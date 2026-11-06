@@ -8731,6 +8731,17 @@ function loadRecords() {
     try {
         // Master Admin Mode: Background must NOT hold another school's records
         if (typeof AuthSession !== 'undefined' && AuthSession.isAdmin() && (!AuthSession.currentSession || !AuthSession.currentSession.isAdminImpersonating)) {
+            const key = getActiveStorageKey();
+            const adminSaved = localStorage.getItem(key);
+            if (adminSaved) {
+                try {
+                    const parsedAdmin = JSON.parse(adminSaved);
+                    if (Array.isArray(parsedAdmin)) {
+                        AppState.records = parsedAdmin;
+                        return;
+                    }
+                } catch(e) {}
+            }
             AppState.records = [];
             return;
         }
@@ -8785,7 +8796,11 @@ function saveRecords(skipCloudPush = false) {
         }
         const key = getActiveStorageKey();
         localStorage.setItem(key, JSON.stringify(AppState.records));
-        localStorage.setItem(SURVEY_STORAGE_KEY, JSON.stringify(AppState.records));
+
+        const activeUdise = (typeof AuthSession !== 'undefined') ? AuthSession.getActiveUdise() : '27240304501';
+        if (activeUdise === '27240304501') {
+            localStorage.setItem(SURVEY_STORAGE_KEY, JSON.stringify(AppState.records));
+        }
 
         // क्लाऊडवर ऑटो-सिंक करणे
         if (!skipCloudPush && typeof cloudSync !== 'undefined' && cloudSync.config && cloudSync.config.enabled && cloudSync.config.autoSync) {
@@ -9119,6 +9134,11 @@ function switchTab(tabId) {
         renderPanjikaTab();
     } else if (tabId === 'tab-admin') {
         renderAdminConsole();
+    } else if (tabId === 'tab-feeding') {
+        const famInp = document.getElementById('feed-family-id');
+        if (!AppState.editingId && (!famInp || !famInp.value || !famInp.value.trim())) {
+            startNewFamily();
+        }
     }
 }
 
@@ -9139,24 +9159,40 @@ function getNextFamilyId() {
     return 'FAM-' + String(next).padStart(3, '0');
 }
 
+function suggestNextFamilyId() {
+    const famInp = document.getElementById('feed-family-id');
+    if (famInp) {
+        famInp.value = getNextFamilyId();
+        famInp.focus();
+        if (typeof showToast === 'function') {
+            showToast('नवीन कुटुंब क्रमांक: ' + famInp.value, 'info');
+        }
+    }
+}
+
 function updateFamilyIdSuggestion() {
-    const isHead = document.getElementById('feed-is-head').value === 'होय';
+    const isHeadEl = document.getElementById('feed-is-head');
+    const isHead = isHeadEl ? isHeadEl.value === 'होय' : true;
     const famSelect = document.getElementById('feed-existing-family-select');
     const famInput = document.getElementById('feed-family-id');
 
     if (isHead) {
-        if (!AppState.editingId && (!AppState.currentFamilyContext || AppState.currentFamilyContext.isNewFamily)) {
-            famInput.value = getNextFamilyId();
+        if (!AppState.editingId) {
+            if (!famInput || !famInput.value || !famInput.value.trim() || !AppState.currentFamilyContext || AppState.currentFamilyContext.isNewFamily) {
+                if (famInput) famInput.value = getNextFamilyId();
+            }
         }
         if (famSelect) famSelect.style.display = 'none';
-        famInput.readOnly = false;
-        document.getElementById('feed-relation').value = 'स्वतः (प्रमुख)';
+        if (famInput) famInput.readOnly = false;
+        const relEl = document.getElementById('feed-relation');
+        if (relEl) relEl.value = 'स्वतः (प्रमुख)';
     } else {
         // Not head: show dropdown of existing families
         renderExistingFamilyOptions();
         if (famSelect) famSelect.style.display = 'block';
-        if (document.getElementById('feed-relation').value === 'स्वतः (प्रमुख)') {
-            document.getElementById('feed-relation').value = 'पत्नी';
+        const relEl = document.getElementById('feed-relation');
+        if (relEl && relEl.value === 'स्वतः (प्रमुख)') {
+            relEl.value = 'पत्नी';
         }
     }
 }
@@ -9169,9 +9205,9 @@ function renderExistingFamilyOptions() {
     // Distinct families
     const map = new Map();
     AppState.records.forEach(r => {
-        if (!map.has(r.familyId)) {
+        if (r.familyId && !map.has(r.familyId)) {
             const head = AppState.records.find(m => m.familyId === r.familyId && m.isHead === 'होय') || r;
-            map.set(r.familyId, head.fullName);
+            map.set(r.familyId, head.fullName || '');
         }
     });
 
@@ -9182,28 +9218,46 @@ function renderExistingFamilyOptions() {
         sel.appendChild(opt);
     });
 
-    if (AppState.currentFamilyContext && AppState.currentFamilyContext.familyId) {
-        sel.value = AppState.currentFamilyContext.familyId;
-        document.getElementById('feed-family-id').value = AppState.currentFamilyContext.familyId;
+    const famInp = document.getElementById('feed-family-id');
+    const curVal = (famInp && famInp.value) ? famInp.value.trim() : (AppState.currentFamilyContext ? AppState.currentFamilyContext.familyId : '');
+    if (curVal) {
+        sel.value = curVal;
+        if (famInp && !famInp.value) famInp.value = curVal;
     }
 }
 
 function onExistingFamilySelected(familyId) {
     if (!familyId) return;
-    document.getElementById('feed-family-id').value = familyId;
+    const famInp = document.getElementById('feed-family-id');
+    if (famInp) famInp.value = familyId;
 
     // Find family members to auto-fill common family properties
     const members = AppState.records.filter(r => r.familyId === familyId);
     if (members.length > 0) {
         const head = members.find(m => m.isHead === 'होय') || members[0];
-        if (head.category) document.getElementById('feed-category').value = head.category;
-        if (head.rationCard) document.getElementById('feed-ration-card').value = head.rationCard;
+        if (head.category) {
+            const catEl = document.getElementById('feed-category');
+            if (catEl) catEl.value = head.category;
+        }
+        if (head.caste) {
+            const casteEl = document.getElementById('feed-caste');
+            if (casteEl) casteEl.value = head.caste;
+        }
+        if (head.rationCard) {
+            const rcEl = document.getElementById('feed-ration-card');
+            if (rcEl) rcEl.value = head.rationCard;
+        }
         
         // घराचा प्रकार (कुटुंबाचा आधीचा किंवा बाय डिफॉल्ट कौलारू)
-        document.getElementById('feed-house-type').value = head.houseType || 'कौलारू / मातीचे';
-        if (head.toilet) document.getElementById('feed-toilet').value = head.toilet;
+        const houseEl = document.getElementById('feed-house-type');
+        if (houseEl) houseEl.value = head.houseType || 'कौलारू / मातीचे';
+        if (head.toilet) {
+            const toiletEl = document.getElementById('feed-toilet');
+            if (toiletEl) toiletEl.value = head.toilet;
+        }
         // पाणी स्रोत (कुटुंबाचा आधीचा किंवा बाय डिफॉल्ट विहीर)
-        document.getElementById('feed-water').value = head.drinkingWater || 'विहीर';
+        const waterEl = document.getElementById('feed-water');
+        if (waterEl) waterEl.value = head.drinkingWater || 'विहीर';
 
         // धर्म व अल्पसंख्याक
         if (head.religion) {
@@ -9216,11 +9270,11 @@ function onExistingFamilySelected(familyId) {
         }
 
         // Extract surname
-        const nameParts = head.fullName.trim().split(' ');
+        const nameParts = String(head.fullName || '').trim().split(' ');
         if (nameParts.length > 1) {
             const surname = nameParts[nameParts.length - 1];
             const nameInput = document.getElementById('feed-fullname');
-            if (!nameInput.value || nameInput.value.trim() === '') {
+            if (nameInput && (!nameInput.value || nameInput.value.trim() === '')) {
                 nameInput.placeholder = 'उदा. नाव वडिलांचेनाव ' + surname;
             }
         }
@@ -9278,18 +9332,34 @@ function recommendSchoolStatus(age) {
 
 function resetFeedingForm() {
     AppState.editingId = null;
+    AppState.currentFamilyContext = null;
     const titleEl = document.getElementById('feed-form-title') || document.getElementById('feeding-form-title');
     if (titleEl) titleEl.textContent = 'नवीन कुटुंब व सदस्य नोंदणी';
     const cancelBtn = document.getElementById('btn-cancel-edit');
     if (cancelBtn) cancelBtn.style.display = 'none';
     const formEl = document.getElementById('survey-feed-form') || document.getElementById('feed-form');
     if (formEl) formEl.reset();
+
+    // Explicitly reset member fields for 100% cross-browser reliability
+    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v; };
+    setVal('feed-fullname', '');
+    setVal('feed-dob', '');
+    setVal('feed-age', '');
+    setVal('feed-aadhaar', '');
+    setVal('feed-mobile', '');
+    setVal('feed-remark', '');
+    setVal('feed-education', 'निरक्षर');
+    setVal('feed-school-going', 'शिक्षण पूर्ण');
+    setVal('feed-class', 'लागू नाही');
+    setVal('feed-school', 'लागू नाही');
+
     const isHeadEl = document.getElementById('feed-is-head');
     if (isHeadEl) isHeadEl.value = 'होय';
+    const famInput = document.getElementById('feed-family-id');
+    if (famInput) famInput.value = getNextFamilyId();
     updateFamilyIdSuggestion();
     const bannerEl = document.getElementById('feed-family-context-banner') || document.getElementById('active-family-badge');
     if (bannerEl) bannerEl.style.display = 'none';
-    AppState.currentFamilyContext = null;
 
     // नवीन डीफॉल्ट्स सुनिश्चित करा:
     // १. घराचा प्रकार बाय डिफॉल्ट कौलारू
@@ -9354,6 +9424,7 @@ function populateFormForEdit(memberId) {
     setVal('feed-dob', rec.dob);
     setVal('feed-age', rec.age);
     setVal('feed-category', rec.category || 'खुला (General)');
+    setVal('feed-caste', rec.caste || '');
     setVal('feed-religion', rec.religion || 'हिंदू');
     setVal('feed-minority', rec.minority || 'नाही');
     setVal('feed-aadhaar', rec.aadhaar);
@@ -9428,8 +9499,8 @@ function handleFormSave(continueWithNextMember) {
     if (!AppState.editingId) {
         const normNewName = typeof normalizeText === 'function' ? normalizeText(fullName) : fullName.toLowerCase();
         const existingMember = AppState.records.find(r => {
-            const normExName = typeof normalizeText === 'function' ? normalizeText(r.fullName) : r.fullName.toLowerCase();
-            return r.familyId.toUpperCase() === familyId.toUpperCase() && normExName === normNewName;
+            const normExName = typeof normalizeText === 'function' ? normalizeText(r.fullName) : String(r.fullName || '').toLowerCase();
+            return String(r.familyId || '').toUpperCase() === familyId.toUpperCase() && normExName === normNewName;
         });
 
         if (existingMember) {
@@ -9449,6 +9520,9 @@ function handleFormSave(continueWithNextMember) {
     const nowIso = new Date().toISOString();
     const nowTs = Date.now();
 
+    const casteEl = document.getElementById('feed-caste');
+    const caste = casteEl ? casteEl.value.trim() : '';
+
     const recordData = {
         id: AppState.editingId || Date.now(),
         familyId: familyId,
@@ -9459,6 +9533,7 @@ function handleFormSave(continueWithNextMember) {
         dob: dob,
         age: isNaN(age) ? '' : age,
         category: document.getElementById('feed-category').value,
+        caste: caste,
         religion: (document.getElementById('feed-religion') && document.getElementById('feed-religion').value) ? document.getElementById('feed-religion').value : 'हिंदू',
         minority: (document.getElementById('feed-minority') && document.getElementById('feed-minority').value) ? document.getElementById('feed-minority').value : 'नाही',
         aadhaar: aadhaar || '-',
@@ -9512,6 +9587,7 @@ function handleFormSave(continueWithNextMember) {
         familyId: familyId,
         surname: surname,
         category: recordData.category,
+        caste: recordData.caste,
         religion: recordData.religion,
         minority: recordData.minority,
         rationCard: recordData.rationCard,
@@ -9540,6 +9616,11 @@ function handleFormSave(continueWithNextMember) {
         setEmpty('feed-mobile');
         setEmpty('feed-remark');
 
+        if (AppState.currentFamilyContext.caste) {
+            const casteEl = document.getElementById('feed-caste');
+            if (casteEl) casteEl.value = AppState.currentFamilyContext.caste;
+        }
+
         // पुढील सदस्यासाठी व्यवसाय पुन्हा शेती ठेवा
         if (occEl) occEl.value = 'शेती';
 
@@ -9552,12 +9633,21 @@ function handleFormSave(continueWithNextMember) {
         const countEl = document.getElementById('context-member-count');
         if (countEl) countEl.textContent = count + ' सदस्य नोंदवले';
 
-
         document.getElementById('feed-fullname').placeholder = surname ? 'उदा. नाव ' + surname : 'सदस्याचे पूर्ण नाव';
         document.getElementById('feed-fullname').focus();
     } else {
+        // चालू कुटुंब पूर्ण जतन झाले; आता पुढील नवीन कुटुंबासाठी फॉर्म तात्काळ तयार करणे
+        AppState.currentFamilyContext = null;
         resetFeedingForm();
-        switchTab('tab-register');
+        const nextFamId = getNextFamilyId();
+        const famInp = document.getElementById('feed-family-id');
+        if (famInp) famInp.value = nextFamId;
+        const isHeadEl = document.getElementById('feed-is-head');
+        if (isHeadEl) isHeadEl.value = 'होय';
+        updateFamilyIdSuggestion();
+        const nameInp = document.getElementById('feed-fullname');
+        if (nameInp) nameInp.focus();
+        showToast('नोंद जतन झाली! पुढील नवीन कुटुंब (' + nextFamId + ') भरण्यासाठी फॉर्म तयार आहे.', 'success');
     }
 }
 
@@ -11631,19 +11721,37 @@ function setupEventListeners() {
         });
     }
 
+    // Feeding form submission (Prevent page reload on Enter)
+    const feedForm = document.getElementById('survey-feed-form') || document.getElementById('feed-form');
+    if (feedForm) {
+        feedForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            handleFormSave(true);
+        });
+    }
+
     // Save buttons
-    document.getElementById('btn-save-next').addEventListener('click', function() {
-        handleFormSave(true);
-    });
+    const btnSaveNext = document.getElementById('btn-save-next');
+    if (btnSaveNext) {
+        btnSaveNext.addEventListener('click', function() {
+            handleFormSave(true);
+        });
+    }
 
-    document.getElementById('btn-save-finish').addEventListener('click', function() {
-        handleFormSave(false);
-    });
+    const btnSaveFinish = document.getElementById('btn-save-finish');
+    if (btnSaveFinish) {
+        btnSaveFinish.addEventListener('click', function() {
+            handleFormSave(false);
+        });
+    }
 
-    document.getElementById('btn-cancel-edit').addEventListener('click', function() {
-        resetFeedingForm();
-        switchTab('tab-register');
-    });
+    const btnCancelEdit = document.getElementById('btn-cancel-edit');
+    if (btnCancelEdit) {
+        btnCancelEdit.addEventListener('click', function() {
+            resetFeedingForm();
+            switchTab('tab-register');
+        });
+    }
 
     // Search input
     const searchInp = document.getElementById('search-input');
@@ -13051,6 +13159,13 @@ if (typeof window !== 'undefined') {
     window.getUserGuideShareText = getUserGuideShareText;
     window.copyUserGuideToClipboard = copyUserGuideToClipboard;
     window.shareUserGuideOnWhatsApp = shareUserGuideOnWhatsApp;
+
+    window.suggestNextFamilyId = suggestNextFamilyId;
+    window.startNewFamily = startNewFamily;
+    window.resetFeedingForm = resetFeedingForm;
+    window.handleFormSave = handleFormSave;
+    window.getNextFamilyId = getNextFamilyId;
+    window.updateFamilyIdSuggestion = updateFamilyIdSuggestion;
 }
 
 
